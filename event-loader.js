@@ -4,6 +4,35 @@
 (function () {
 var SUPABASE_URL = 'https://nrotipuxmfbiqvzolzox.supabase.co';
 var SUPABASE_ANON_KEY = 'sb_publishable_aWyIwLYXvHDgHbTYKDnVjA_54uijLKx';
+// ===== SHUFFLE FOTO GALERI =====
+// Foto di grid galeri saling bertukar tempat secara berkala,
+// berapapun jumlah fotonya (minimal 2). Jalan untuk acara dinamis & demo statis.
+function pasangShuffleGaleri() {
+var g = document.querySelectorAll('#galeri .grid img');
+if (g.length < 2) return;
+if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+var imgs = Array.prototype.slice.call(g);
+setInterval(function () {
+var a = Math.floor(Math.random() * imgs.length);
+var b = Math.floor(Math.random() * imgs.length);
+while (b === a) b = Math.floor(Math.random() * imgs.length);
+// Fade out kedua foto, tukar src saat tak terlihat, lalu fade in
+imgs[a].style.opacity = '0';
+imgs[b].style.opacity = '0';
+setTimeout(function () {
+var tmp = imgs[a].src;
+imgs[a].src = imgs[b].src;
+imgs[b].src = tmp;
+imgs[a].style.opacity = '1';
+imgs[b].style.opacity = '1';
+}, 400);
+}, 4500);
+}
+if (document.readyState === 'loading') {
+document.addEventListener('DOMContentLoaded', pasangShuffleGaleri);
+} else {
+pasangShuffleGaleri();
+}
 var slug = new URLSearchParams(window.location.search).get('event');
 if (!slug) return;
 var sb = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
