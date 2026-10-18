@@ -48,14 +48,16 @@ const server = http.createServer((req, res) => {
   if (urlPath === '/undangan-2') {
     urlPath = '/Desain/undangan_pernikahan_putra_putri_palet_warna_baru_2/code.html';
   }
-  // Undangan dinamis per acara: /u/nama-slug
-  // Redirect ke /render.html?slug=... supaya query benar-benar terlihat
-  // oleh browser (window.location.search di render.html).
+  // Undangan dinamis per acara: /u/nama-slug (?kpd=Nama+Tamu ikut utuh)
+  // Sajikan render.html sebagai "rewrite" (URL asli tidak berubah),
+  // supaya parameter seperti ?kpd= tidak hilang oleh redirect.
   if (urlPath.startsWith('/u/')) {
-    const slug = decodeURIComponent(urlPath.slice(3)).split('/')[0].split('?')[0].trim();
+    const slug = urlPath.slice(3).split('/')[0].trim();
     if (slug) {
-      res.writeHead(302, { Location: '/render.html?slug=' + encodeURIComponent(slug) });
-      return res.end();
+      return fs.readFile(path.join(ROOT, 'render.html'), (err, data) => {
+        if (err) return send(res, 500, 'Gagal memuat halaman undangan');
+        send(res, 200, data, MIME['.html']);
+      });
     }
   }
 

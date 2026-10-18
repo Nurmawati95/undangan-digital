@@ -246,6 +246,44 @@ if (L.tamu && !new URLSearchParams(window.location.search).get('to')) {
 var g2 = document.getElementById('guest-name');
 if (g2) g2.textContent = L.tamu;
 }
+
+// ===== PARAMETER TAMU ?kpd= (prioritas) atau ?to= (lama) =====
+var _up = new URLSearchParams(window.location.search);
+var _kpd = _up.get('kpd') || _up.get('to') || '';
+if (_kpd) {
+var _gn = document.getElementById('guest-name');
+if (_gn) _gn.textContent = _kpd;
+}
+
+// ===== TOMBOL SHAAR DI DEKAT "Buka Undangan" =====
+function pasangShareUI() {
+var slug = _up.get('event') || '';
+var kpd = _kpd;
+var base = window.location.origin + '/u/' + slug;
+var link = kpd ? base + '?kpd=' + encodeURIComponent(kpd) : base;
+var teks = kpd ? 'Assalamualaikum, saya undangan dari ' + kpd : 'Assalamualaikum, saya akan hadir.';
+var waUrl = 'https://wa.me/?text=' + encodeURIComponent(teks + ' ' + link);
+var btnCopy = document.getElementById('btn-copy-link');
+var btnWA = document.getElementById('btn-wa-share');
+if (btnCopy) {
+btnCopy.onclick = function () {
+navigator.clipboard.writeText(link).then(function () {
+var asm = btnCopy.innerHTML;
+btnCopy.innerHTML = '<i class="fa-solid fa-check"></i> <span>Disalin!</span>';
+setTimeout(function () { btnCopy.innerHTML = asm; }, 2000);
 });
+};
+}
+if (btnWA) btnWA.href = waUrl;
+}
+if (document.readyState === 'loading') {
+document.addEventListener('DOMContentLoaded', pasangShareUI);
+} else {
+pasangShareUI();
+}
+
 })();
+})();
+
+
 
