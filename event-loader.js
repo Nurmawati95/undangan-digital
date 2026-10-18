@@ -34,6 +34,36 @@ document.addEventListener('DOMContentLoaded', pasangShuffleGaleri);
 pasangShuffleGaleri();
 }
 var slug = new URLSearchParams(window.location.search).get('event');
+var _up = new URLSearchParams(window.location.search);
+var _kpd = _up.get('kpd') || _up.get('to') || '';
+
+// ===== TOMBOL SHARE DI DEKAT "Buka Undangan" (jalan meski tidak ada slug) =====
+function pasangShareUI() {
+var s = _up.get('event') || '';
+var kpd = _kpd;
+var base = window.location.origin + '/u/' + s;
+var link = kpd ? base + '?kpd=' + encodeURIComponent(kpd) : base;
+var teks = kpd ? 'Assalamualaikum, saya undangan dari ' + kpd : 'Assalamualaikum, saya akan hadir.';
+var waUrl = 'https://wa.me/?text=' + encodeURIComponent(teks + ' ' + link);
+var btnCopy = document.getElementById('btn-copy-link');
+var btnWA = document.getElementById('btn-wa-share');
+if (btnCopy) {
+btnCopy.onclick = function () {
+navigator.clipboard.writeText(link).then(function () {
+var asm = btnCopy.innerHTML;
+btnCopy.innerHTML = '<i class="fa-solid fa-check"></i> <span>Disalin!</span>';
+setTimeout(function () { btnCopy.innerHTML = asm; }, 2000);
+});
+};
+}
+if (btnWA) btnWA.href = waUrl;
+}
+if (document.readyState === 'loading') {
+document.addEventListener('DOMContentLoaded', pasangShareUI);
+} else {
+pasangShareUI();
+}
+
 if (!slug) return;
 var sb = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
 if (!sb) return;
@@ -47,7 +77,7 @@ v = toDirectImg(v);
 document.querySelectorAll(sel).forEach(function (el) { el.src = v; });
 }
 // Konversi link share Google Drive -> URL gambar langsung (lh3).
-// Link share Drive (…/file/d/ID/view) adalah halaman HTML, bukan gambar.
+// Link share Drive (â€¦/file/d/ID/view) adalah halaman HTML, bukan gambar.
 // Suffix =s1600 memaksa URL baru sehingga browser mengambil gambar segar
 // (menghindari cache lama "halaman izin" Google dari saat file masih private).
 function toDirectImg(u) {
@@ -246,44 +276,6 @@ if (L.tamu && !new URLSearchParams(window.location.search).get('to')) {
 var g2 = document.getElementById('guest-name');
 if (g2) g2.textContent = L.tamu;
 }
-
-// ===== PARAMETER TAMU ?kpd= (prioritas) atau ?to= (lama) =====
-var _up = new URLSearchParams(window.location.search);
-var _kpd = _up.get('kpd') || _up.get('to') || '';
-if (_kpd) {
-var _gn = document.getElementById('guest-name');
-if (_gn) _gn.textContent = _kpd;
-}
-
-// ===== TOMBOL SHAAR DI DEKAT "Buka Undangan" =====
-function pasangShareUI() {
-var slug = _up.get('event') || '';
-var kpd = _kpd;
-var base = window.location.origin + '/u/' + slug;
-var link = kpd ? base + '?kpd=' + encodeURIComponent(kpd) : base;
-var teks = kpd ? 'Assalamualaikum, saya undangan dari ' + kpd : 'Assalamualaikum, saya akan hadir.';
-var waUrl = 'https://wa.me/?text=' + encodeURIComponent(teks + ' ' + link);
-var btnCopy = document.getElementById('btn-copy-link');
-var btnWA = document.getElementById('btn-wa-share');
-if (btnCopy) {
-btnCopy.onclick = function () {
-navigator.clipboard.writeText(link).then(function () {
-var asm = btnCopy.innerHTML;
-btnCopy.innerHTML = '<i class="fa-solid fa-check"></i> <span>Disalin!</span>';
-setTimeout(function () { btnCopy.innerHTML = asm; }, 2000);
 });
-};
-}
-if (btnWA) btnWA.href = waUrl;
-}
-if (document.readyState === 'loading') {
-document.addEventListener('DOMContentLoaded', pasangShareUI);
-} else {
-pasangShareUI();
-}
 
 })();
-})();
-
-
-
