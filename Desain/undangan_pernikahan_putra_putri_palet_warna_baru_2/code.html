@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+
+<html class="scroll-smooth" lang="id">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+<title>The Wedding of Putra &amp; Putri - UNDIGITAL</title>
+<!-- Tailwind CSS untuk Desain Responsif Cepat -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Font Elegan dari Google Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;0,700;1,600&amp;family=Great+Vibes&amp;family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<!-- FontAwesome untuk Ikon -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet"/>
+<style>
+        :root {
+            --color-blue: #2391FF;
+            --color-yellow-light: #FFF83F;
+            --color-gold: #FFCD54;
+            --color-pink: #F70063;
+        }
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #0b1a30;
+            overflow-x: hidden;
+        }
+        .font-esthetic {
+            font-family: 'Great Vibes', cursive;
+        }
+        .font-serif-title {
+            font-family: 'Cormorant Garamond', serif;
+        }
+        /* Ukuran Full Layar HP Dinamis (Anti Terpotong Browser HP) */
+        .full-screen-dvh {
+            min-height: 100dvh;
+        }
+        /* Animasi Piringan Musik Berputar */
+        @keyframes spin-slow {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        .animate-spin-slow {
+            animation: spin-slow 8s linear infinite;
+        }
+        /* Menyembunyikan Scrollbar tapi tetap bisa di-scroll */
+        ::-webkit-scrollbar {
+            width: 0px;
+            background: transparent;
+        }
+    </style>
+</head>
+<body class="flex justify-center items-start min-h-screen relative selection:bg-[#F70063] selection:text-white">
+<!-- BACKGROUND BLUR UNTUK TAMPILAN LAPTOP/PC -->
+<div class="fixed inset-0 bg-cover bg-center blur-md opacity-30 z-0 hidden md:block" style="background-image: url('https://www.gstatic.com/labs-code/stitch/stitch-placeholder-300x300.svg');">
+</div>
+
+<!-- CANVAS ANIMASI KELOPAK BUNGA & SPARKLE (EFEK ROMANTIS) -->
+<canvas id="petals-canvas" class="fixed inset-0 pointer-events-none z-30 transition-opacity duration-700 opacity-0"></canvas>
+
+<!-- BINGKAI UTAMA UNDANGAN (FULL LAYAR DI HP, UKURAN HP DI LAPTOP) -->
+<div class="w-full max-w-[480px] bg-[#FAF9F6] text-slate-800 relative z-10 shadow-2xl min-h-screen overflow-hidden">
+<!-- ==========================================
+             1. SAMPUL DEPAN (FULL SCREEN OVERLAY)
+        =========================================== -->
+<div class="fixed inset-0 z-50 flex justify-center bg-slate-950/90 transition-transform duration-1000 ease-in-out" id="cover-overlay">
+<div class="w-full max-w-[480px] full-screen-dvh relative flex flex-col justify-between p-8 text-center text-white bg-cover bg-center" style="background-image: linear-gradient(to bottom, rgba(11,26,48,0.55), rgba(11,26,48,0.92)), url('https://www.gstatic.com/labs-code/stitch/stitch-placeholder-300x300.svg');">
+<!-- Bagian Atas Sampul -->
+<div class="mt-8">
+<p class="tracking-[0.3em] text-xs uppercase text-[#FFF83F] font-semibold mb-2">The Wedding Of</p>
+<h1 class="font-esthetic text-6xl text-white drop-shadow-md">Putra &amp; Putri</h1>
+<p class="text-sm mt-2 text-[#FFCD54] font-medium">Jumat, 30 Oktober 2026</p>
+</div>
+<!-- Bagian Bawah Sampul (Nama Tamu & Tombol Buka) -->
+<div class="mb-8">
+<div class="bg-white/10 backdrop-blur-md border border-[#2391FF]/30 rounded-2xl p-5 mb-6 shadow-xl">
+<p class="text-xs text-slate-200 mb-1">Kepada Yth. Bapak/Ibu/Saudara/i:</p>
+<h2 class="text-xl font-bold text-[#FFF83F] tracking-wide" id="guest-name">Bapak Budi &amp; Partner</h2>
+<p class="text-[11px] text-slate-300 mt-1">Di Tempat</p>
+</div>
+<button class="bg-[#F70063] hover:bg-[#d60055] text-white font-semibold py-3.5 px-8 rounded-full shadow-lg shadow-[#F70063]/30 transition transform hover:scale-105 active:scale-95 flex items-center justify-center gap-2 mx-auto" onclick="openInvitation()">
+<i class="fa-solid fa-envelope-open-text text-[#FFF83F]"></i>
+<span>Buka Undangan</span>
+</button>
+</div>
+</div>
+</div>
+<!-- ==========================================
+             2. ISI UNDANGAN UTAMA (MUNCUL SETELAH DIBUKA)
+        =========================================== -->
+<main class="pb-24" id="main-content">
+<!-- SEKSI 1: HERO & HITUNG MUNDUR (FULL LAYAR) -->
+<section class="full-screen-dvh flex flex-col justify-center items-center text-center p-6 relative bg-gradient-to-b from-[#2391FF]/10 via-[#FFF83F]/10 to-[#FAF9F6]" id="home">
+<p class="text-xs tracking-[0.25em] uppercase text-[#2391FF] font-bold mb-3">We Are Getting Married</p>
+<!-- Bingkai Foto Melengkung (Arch) -->
+<div class="w-60 h-80 rounded-t-full border-4 border-[#FFCD54] p-2 shadow-2xl mb-6 bg-white/70 backdrop-blur-sm">
+<img alt="Putra &amp; Putri" class="w-full h-full object-cover rounded-t-full" src="https://www.gstatic.com/labs-code/stitch/stitch-placeholder-300x300.svg"/>
+</div>
+<h1 class="font-esthetic text-5xl text-[#2391FF] mb-2">Putra &amp; Putri</h1>
+<p class="text-sm text-slate-600 mb-6 font-semibold tracking-wider">30 . 10 . 2026</p>
+<!-- Kotak Countdown (Hitung Mundur) -->
+<div class="grid grid-cols-4 gap-3 w-full max-w-xs mb-6">
+<div class="bg-[#2391FF] text-white p-2.5 rounded-xl shadow-md shadow-[#2391FF]/20 border border-white/20">
+<span class="text-xl font-bold block text-[#FFF83F]" id="days">00</span>
+<span class="text-[10px] uppercase tracking-wider text-white/90">Hari</span>
+</div>
+<div class="bg-[#2391FF] text-white p-2.5 rounded-xl shadow-md shadow-[#2391FF]/20 border border-white/20">
+<span class="text-xl font-bold block text-[#FFF83F]" id="hours">00</span>
+<span class="text-[10px] uppercase tracking-wider text-white/90">Jam</span>
+</div>
+<div class="bg-[#2391FF] text-white p-2.5 rounded-xl shadow-md shadow-[#2391FF]/20 border border-white/20">
+<span class="text-xl font-bold block text-[#FFF83F]" id="minutes">00</span>
+<span class="text-[10px] uppercase tracking-wider text-white/90">Menit</span>
+</div>
+<div class="bg-[#2391FF] text-white p-2.5 rounded-xl shadow-md shadow-[#2391FF]/20 border border-white/20">
+<span class="text-xl font-bold block text-[#FFF83F]" id="seconds">00</span>
+<span class="text-[10px] uppercase tracking-wider text-white/90">Detik</span>
+</div>
+</div>
+<a class="text-xs text-[#2391FF] font-semibold flex flex-col items-center gap-1 animate-bounce mt-2 hover:text-[#F70063] transition" href="#mempelai">
+<span>Geser ke Bawah</span>
+<i class="fa-solid fa-chevron-down"></i>
+</a>
+</section>
+<!-- SEKSI 2: PROFIL MEMPELAI -->
+<section class="py-16 px-6 text-center bg-white" id="mempelai">
+<div class="w-12 h-12 mx-auto mb-3 rounded-full bg-[#FFF83F]/30 flex items-center justify-center text-[#F70063]">
+<i class="fa-solid fa-dove text-xl"></i>
+</div>
+<p class="text-xs italic text-slate-600 leading-relaxed mb-8 max-w-sm mx-auto">
+                    "Dan di antara tanda-tanda (kebesaran)-Nya ialah Dia menciptakan pasangan-pasangan untukmu dari jenismu sendiri, agar kamu cenderung dan merasa tenteram kepadanya." <br/><b class="text-[#2391FF]">(QS. Ar-Rum: 21)</b>
+</p>
+<!-- Mempelai Pria -->
+<div class="mb-8">
+<img alt="Mempelai Pria" class="w-36 h-36 rounded-full object-cover mx-auto border-4 border-[#2391FF] shadow-lg mb-4" src="https://www.gstatic.com/labs-code/stitch/stitch-placeholder-300x300.svg"/>
+<h3 class="font-serif-title text-3xl font-bold text-slate-900">Putra Pratama, S.Kom</h3>
+<p class="text-xs text-slate-500 mt-1">Putra Pertama dari Bapak H. Ahmad &amp; Ibu Hj. Siti</p>
+<a class="inline-flex items-center gap-1.5 text-xs bg-[#2391FF]/10 text-[#2391FF] font-medium border border-[#2391FF]/30 px-3.5 py-1.5 rounded-full mt-3 hover:bg-[#2391FF] hover:text-white transition" href="https://instagram.com" target="_blank">
+<i class="fa-brands fa-instagram"></i> @putrapratama
+                    </a>
+</div>
+<div class="font-esthetic text-5xl text-[#F70063] my-6">&amp;</div>
+<!-- Mempelai Wanita -->
+<div>
+<img alt="Mempelai Wanita" class="w-36 h-36 rounded-full object-cover mx-auto border-4 border-[#F70063] shadow-lg mb-4" src="https://www.gstatic.com/labs-code/stitch/stitch-placeholder-300x300.svg"/>
+<h3 class="font-serif-title text-3xl font-bold text-slate-900">Putri Ayu Lestari, S.E</h3>
+<p class="text-xs text-slate-500 mt-1">Putri Kedua dari Bapak H. Hendra &amp; Ibu Hj. Rina</p>
+<a class="inline-flex items-center gap-1.5 text-xs bg-[#F70063]/10 text-[#F70063] font-medium border border-[#F70063]/30 px-3.5 py-1.5 rounded-full mt-3 hover:bg-[#F70063] hover:text-white transition" href="https://instagram.com" target="_blank">
+<i class="fa-brands fa-instagram"></i> @putriayulestari
+                    </a>
+</div>
+</section>
+<!-- SEKSI 3: SUSUNAN ACARA & LOKASI MAPS -->
+<section class="py-16 px-6 text-center bg-[#FAF9F6]" id="acara">
+<h2 class="font-esthetic text-4xl text-[#2391FF] mb-2">Rangkaian Acara</h2>
+<p class="text-xs text-slate-600 mb-8">InsyaAllah acara akan diselenggarakan pada:</p>
+<!-- Kartu Akad Nikah -->
+<div class="bg-white p-6 rounded-2xl shadow-sm border-t-4 border-t-[#2391FF] border border-slate-100 mb-6">
+<div class="w-12 h-12 bg-[#2391FF]/10 text-[#2391FF] rounded-full flex items-center justify-center mx-auto mb-3 text-xl">
+<i class="fa-solid fa-handshake-simple"></i>
+</div>
+<h3 class="font-serif-title text-2xl font-bold text-slate-900 mb-2">Akad Nikah</h3>
+<p class="text-sm font-semibold text-[#2391FF]">Jumat, 30 Oktober 2026</p>
+<p class="text-xs text-slate-500 mb-4">Pukul 08.00 WITA - Selesai</p>
+<hr class="border-slate-100 my-3"/>
+<p class="text-xs font-bold text-slate-800">Masjid Agung Islamic Center</p>
+<p class="text-xs text-slate-500">Jl. Trans Sulawesi, Kec. Bungku Tengah</p>
+</div>
+<!-- Kartu Resepsi -->
+<div class="bg-white p-6 rounded-2xl shadow-sm border-t-4 border-t-[#F70063] border border-slate-100 mb-6">
+<div class="w-12 h-12 bg-[#F70063]/10 text-[#F70063] rounded-full flex items-center justify-center mx-auto mb-3 text-xl">
+<i class="fa-solid fa-champagne-glasses"></i>
+</div>
+<h3 class="font-serif-title text-2xl font-bold text-slate-900 mb-2">Resepsi Pernikahan</h3>
+<p class="text-sm font-semibold text-[#F70063]">Jumat, 30 Oktober 2026</p>
+<p class="text-xs text-slate-500 mb-4">Pukul 11.00 WITA - Selesai</p>
+<hr class="border-slate-100 my-3"/>
+<p class="text-xs font-bold text-slate-800">Gedung Serbaguna Bahomohoni</p>
+<p class="text-xs text-slate-500 mb-4">Jl. Raya Bahomohoni, Morowali</p>
+<a class="inline-flex items-center gap-2 bg-[#2391FF] hover:bg-[#1a7ae0] text-white text-xs font-semibold px-5 py-2.5 rounded-full shadow hover:shadow-lg transition" href="https://maps.google.com" target="_blank">
+<i class="fa-solid fa-location-dot text-[#FFF83F]"></i> Petunjuk Google Maps
+                    </a>
+</div>
+</section>
+<!-- SEKSI 4: LOVE STORY & GALERI FOTO -->
+<section class="py-16 px-6 bg-white" id="galeri">
+<h2 class="font-esthetic text-4xl text-[#F70063] text-center mb-2">Kisah Cinta &amp; Galeri</h2>
+<p class="text-xs text-slate-500 text-center mb-8">Momen bahagia perjalanan kami berdua</p>
+<!-- Love Story Singkat -->
+<div class="border-l-2 border-[#FFCD54] ml-4 pl-4 space-y-6 mb-12">
+<div class="relative">
+<div class="w-3.5 h-3.5 bg-[#2391FF] rounded-full absolute -left-[23px] top-1 ring-4 ring-white shadow"></div>
+<h4 class="text-sm font-bold text-slate-900">2023 - Pertama Bertemu</h4>
+<p class="text-xs text-slate-600 mt-1">Berawal dari rekan kerja satu proyek hingga akhirnya saling mengenal lebih dekat.</p>
+</div>
+<div class="relative">
+<div class="w-3.5 h-3.5 bg-[#F70063] rounded-full absolute -left-[23px] top-1 ring-4 ring-white shadow"></div>
+<h4 class="text-sm font-bold text-slate-900">2026 - Lamaran &amp; Pernikahan</h4>
+<p class="text-xs text-slate-600 mt-1">Memutuskan untuk mengikat janji suci pernikahan di tahun 2026.</p>
+</div>
+</div>
+<!-- Grid Galeri Foto -->
+<div class="grid grid-cols-2 gap-3">
+<div class="relative rounded-xl overflow-hidden shadow-sm group">
+<img alt="Galeri 1" class="w-full h-44 object-cover group-hover:scale-105 transition duration-300" src="https://www.gstatic.com/labs-code/stitch/stitch-placeholder-300x300.svg"/>
+<div class="absolute inset-0 bg-gradient-to-t from-[#2391FF]/40 to-transparent opacity-0 group-hover:opacity-100 transition"></div>
+</div>
+<div class="relative rounded-xl overflow-hidden shadow-sm group">
+<img alt="Galeri 2" class="w-full h-44 object-cover group-hover:scale-105 transition duration-300" src="https://www.gstatic.com/labs-code/stitch/stitch-placeholder-300x300.svg"/>
+<div class="absolute inset-0 bg-gradient-to-t from-[#F70063]/40 to-transparent opacity-0 group-hover:opacity-100 transition"></div>
+</div>
+<div class="relative rounded-xl overflow-hidden shadow-sm group">
+<img alt="Galeri 3" class="w-full h-44 object-cover group-hover:scale-105 transition duration-300" src="https://www.gstatic.com/labs-code/stitch/stitch-placeholder-300x300.svg"/>
+<div class="absolute inset-0 bg-gradient-to-t from-[#FFCD54]/40 to-transparent opacity-0 group-hover:opacity-100 transition"></div>
+</div>
+<div class="relative rounded-xl overflow-hidden shadow-sm group">
+<img alt="Galeri 4" class="w-full h-44 object-cover group-hover:scale-105 transition duration-300" src="https://www.gstatic.com/labs-code/stitch/stitch-placeholder-300x300.svg"/>
+<div class="absolute inset-0 bg-gradient-to-t from-[#2391FF]/40 to-transparent opacity-0 group-hover:opacity-100 transition"></div>
+</div>
+</div>
+</section>
+<!-- SEKSI 5: AMPLOP DIGITAL (REKENING HADIAH) -->
+<section class="py-16 px-6 text-center bg-[#FAF9F6]">
+<h2 class="font-esthetic text-4xl text-[#2391FF] mb-2">Amplop Digital</h2>
+<p class="text-xs text-slate-600 mb-6">Doa restu Anda merupakan karunia yang sangat berarti bagi kami. Namun jika ingin memberikan tanda kasih, dapat melalui:</p>
+<!-- Kartu Bank 1 -->
+<div class="bg-gradient-to-br from-[#2391FF] via-[#1b71cb] to-[#0c3c73] text-white p-6 rounded-2xl shadow-xl mb-4 text-left relative overflow-hidden border border-white/20">
+<div class="absolute -right-8 -bottom-8 w-32 h-32 bg-[#FFCD54]/10 rounded-full blur-xl pointer-events-none"></div>
+<div class="flex justify-between items-center mb-4">
+<span class="font-bold tracking-widest text-sm text-[#FFF83F]">BANK BRI</span>
+<i class="fa-solid fa-credit-card text-2xl text-[#FFCD54]"></i>
+</div>
+<p class="text-xs text-slate-200">Nomor Rekening:</p>
+<p class="text-lg font-mono font-bold tracking-wider mb-1 text-white" id="rek-1">1234567890123</p>
+<p class="text-xs text-[#FFCD54] mb-4">a.n Putra Pratama</p>
+<button class="bg-white/20 hover:bg-[#F70063] text-white text-xs px-4 py-2 rounded-lg backdrop-blur-sm flex items-center gap-2 transition duration-200 font-medium shadow-sm" onclick="copyText('1234567890123')">
+<i class="fa-regular fa-copy text-[#FFF83F]"></i> <span>Salin Rekening</span>
+</button>
+</div>
+<!-- Tombol QR Buku Tamu (Fitur Ekstra) -->
+<div class="mt-8 bg-white p-5 rounded-2xl border border-[#FFCD54]/60 shadow-sm">
+<h4 class="text-sm font-bold text-slate-900 mb-1 flex items-center justify-center gap-1.5">
+<i class="fa-solid fa-qrcode text-[#F70063]"></i> QR Code Buku Tamu
+                    </h4>
+<p class="text-[11px] text-slate-500 mb-3">Tunjukkan QR Code ini kepada penerima tamu di gedung acara:</p>
+<img alt="QR Tamu" class="w-28 h-28 mx-auto border-2 border-[#2391FF]/30 p-2 rounded-xl bg-white" src="https://www.gstatic.com/labs-code/stitch/stitch-placeholder-300x300.svg"/>
+</div>
+</section>
+<!-- SEKSI 6: UCAPAN & KONFIRMASI KEHADIRAN (RSVP) -->
+<section class="py-16 px-6 bg-white" id="ucapan">
+<h2 class="font-esthetic text-4xl text-[#F70063] text-center mb-2">Kirim Ucapan &amp; RSVP</h2>
+<p class="text-xs text-slate-500 text-center mb-6">Berikan doa terbaik dan konfirmasi kehadiran Anda</p>
+<!-- Form Input Ucapan -->
+<form class="bg-[#FAF9F6] p-5 rounded-2xl border border-slate-200 mb-6 space-y-3" onsubmit="submitComment(event)">
+<div>
+<label class="text-xs font-semibold text-slate-700 block mb-1">Nama Anda</label>
+<input class="w-full text-xs p-3 rounded-xl border border-slate-300 focus:outline-none focus:border-[#2391FF] focus:ring-1 focus:ring-[#2391FF] bg-white" id="input-nama" placeholder="Contoh: Budi Santoso" required="" type="text"/>
+</div>
+<div>
+<label class="text-xs font-semibold text-slate-700 block mb-1">Konfirmasi Kehadiran</label>
+<select class="w-full text-xs p-3 rounded-xl border border-slate-300 focus:outline-none focus:border-[#2391FF] bg-white" id="input-hadir">
+<option value="Hadir">Ya, Saya Akan Hadir</option>
+<option value="Tidak Hadir">Maaf, Belum Bisa Hadir</option>
+</select>
+</div>
+<div>
+<label class="text-xs font-semibold text-slate-700 block mb-1">Ucapan &amp; Doa</label>
+<textarea class="w-full text-xs p-3 rounded-xl border border-slate-300 focus:outline-none focus:border-[#2391FF] focus:ring-1 focus:ring-[#2391FF] bg-white" id="input-pesan" placeholder="Tulis ucapan selamat dan doa untuk mempelai..." required="" rows="3"></textarea>
+</div>
+<button class="w-full bg-[#F70063] hover:bg-[#d60055] text-white font-semibold text-xs py-3 rounded-xl shadow-md shadow-[#F70063]/25 transition" type="submit">
+<i class="fa-solid fa-paper-plane mr-1 text-[#FFF83F]"></i> Kirim Ucapan
+                    </button>
+</form>
+<!-- Daftar Komentar Tamu -->
+<div class="space-y-3 max-h-72 overflow-y-auto pr-1" id="comment-list">
+<div class="bg-[#FAF9F6] p-3.5 rounded-xl border border-slate-100">
+<div class="flex justify-between items-center mb-1">
+<span class="font-bold text-xs text-[#2391FF]">Hasyim &amp; Lisa</span>
+<span class="text-[10px] bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full font-semibold">Hadir</span>
+</div>
+<p class="text-xs text-slate-600">Selamat menempuh hidup baru Putra &amp; Putri! Semoga menjadi keluarga sakinah mawaddah warahmah. Aamiin.</p>
+</div>
+<div class="bg-[#FAF9F6] p-3.5 rounded-xl border border-slate-100">
+<div class="flex justify-between items-center mb-1">
+<span class="font-bold text-xs text-[#2391FF]">Takdir &amp; Cisnayanti</span>
+<span class="text-[10px] bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full font-semibold">Hadir</span>
+</div>
+<p class="text-xs text-slate-600">Lancar sampai hari H ya! Kami pasti datang meramaikan.</p>
+</div>
+</div>
+</section>
+<!-- FOOTER BRANDING UNDIGITAL -->
+<footer class="py-10 text-center bg-[#0b1a30] text-slate-400 text-xs">
+<p class="mb-1 text-slate-300">Merupakan suatu kehormatan dan kebahagiaan bagi kami apabila Bapak/Ibu/Saudara/i berkenan hadir.</p>
+<h3 class="font-esthetic text-4xl text-[#FFCD54] my-3">Putra &amp; Putri</h3>
+<hr class="border-slate-800 w-24 mx-auto my-4"/>
+<p class="text-[11px]">Made with <span class="text-[#F70063]">❤️</span> by <b class="text-[#FFF83F] tracking-wider">UNDIGITAL</b></p>
+</footer>
+</main>
+<!-- ==========================================
+             3. TOMBOL MELAYANG (MUSIK & MENU BAWAH)
+        =========================================== -->
+<!-- Audio Musik Latar (Otomatis Jalan Saat Buka Undangan) -->
+<audio id="bg-music" loop="">
+<source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg"/>
+</audio>
+
+<!-- Tombol Efek Kelopak Melayang (Toggle Petals) -->
+<button class="fixed bottom-32 right-4 md:right-[calc(50%-220px)] z-40 w-11 h-11 bg-white/90 backdrop-blur text-[#F70063] rounded-full shadow-lg shadow-black/10 flex items-center justify-center hidden border border-[#FFCD54]/50 transition hover:scale-105 active:scale-95" id="petal-btn" onclick="togglePetals()" title="Kelopak Bunga">
+<i class="fa-solid fa-seedling text-base text-[#F70063]" id="petal-icon"></i>
+</button>
+
+<!-- Tombol Musik Berputar di Kanan Bawah -->
+<button class="fixed bottom-20 right-4 md:right-[calc(50%-220px)] z-40 w-11 h-11 bg-[#F70063] text-white rounded-full shadow-xl shadow-[#F70063]/40 flex items-center justify-center animate-spin-slow hidden border-2 border-[#FFF83F]" id="music-btn" onclick="toggleMusic()">
+<i class="fa-solid fa-compact-disc text-xl text-[#FFF83F]" id="music-icon"></i>
+</button>
+<!-- Menu Navigasi Bawah (Bottom Bar) -->
+<nav class="fixed bottom-3 left-1/2 -translate-x-1/2 z-40 w-[92%] max-w-[440px] bg-white/95 backdrop-blur-md border border-slate-200/80 rounded-2xl shadow-2xl py-2 px-4 hidden justify-around items-center text-slate-500" id="bottom-nav">
+<a class="flex flex-col items-center gap-1 text-[#2391FF] hover:text-[#1875d6] transition" href="#home">
+<i class="fa-solid fa-house text-sm"></i>
+<span class="text-[10px] font-medium">Home</span>
+</a>
+<a class="flex flex-col items-center gap-1 hover:text-[#F70063] transition" href="#mempelai">
+<i class="fa-solid fa-heart text-sm"></i>
+<span class="text-[10px] font-medium">Mempelai</span>
+</a>
+<a class="flex flex-col items-center gap-1 hover:text-[#2391FF] transition" href="#acara">
+<i class="fa-solid fa-calendar-check text-sm"></i>
+<span class="text-[10px] font-medium">Acara</span>
+</a>
+<a class="flex flex-col items-center gap-1 hover:text-[#FFCD54] transition" href="#galeri">
+<i class="fa-solid fa-images text-sm"></i>
+<span class="text-[10px] font-medium">Galeri</span>
+</a>
+<a class="flex flex-col items-center gap-1 hover:text-[#F70063] transition" href="#ucapan">
+<i class="fa-solid fa-comments text-sm"></i>
+<span class="text-[10px] font-medium">Ucapan</span>
+</a>
+</nav>
+</div>
+<!-- ==========================================
+         SCRIPT INTERAKTIF (BUKA SAMPUL, MUSIK, COUNTDOWN, PETALS ANIMATION, DLL)
+    =========================================== -->
+<script>
+        const music = document.getElementById('bg-music');
+        const musicBtn = document.getElementById('music-btn');
+        const petalBtn = document.getElementById('petal-btn');
+        const bottomNav = document.getElementById('bottom-nav');
+        let isPlaying = false;
+
+        // ==========================================
+        // SISTEM ANIMASI KELOPAK BUNGA (FALLING PETALS & SPARKLES)
+        // ==========================================
+        const canvas = document.getElementById('petals-canvas');
+        const ctx = canvas.getContext('2d');
+        let petals = [];
+        let sparkles = [];
+        let petalsActive = false;
+        let animationFrameId = null;
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        const petalColors = [
+            'rgba(247, 0, 99, 0.75)',    // Deep Pink / Magenta #F70063
+            'rgba(255, 105, 180, 0.70)',  // Soft Sakura Rose
+            'rgba(255, 182, 193, 0.85)',  // Pale Pink
+            'rgba(255, 205, 84, 0.70)',   // Warm Gold #FFCD54
+            'rgba(35, 145, 255, 0.50)'    // Light Blue Accent #2391FF
+        ];
+
+        class Petal {
+            constructor(burst = false) {
+                this.reset(burst);
+            }
+
+            reset(burst = false) {
+                if (burst) {
+                    this.x = canvas.width / 2 + (Math.random() - 0.5) * 120;
+                    this.y = canvas.height * 0.45 + (Math.random() - 0.5) * 80;
+                    const angle = Math.random() * Math.PI * 2;
+                    const speed = 4 + Math.random() * 8;
+                    this.vx = Math.cos(angle) * speed;
+                    this.vy = Math.sin(angle) * speed - 3;
+                } else {
+                    this.x = Math.random() * canvas.width;
+                    this.y = -20 - Math.random() * 60;
+                    this.vx = (Math.random() - 0.5) * 1.5;
+                    this.vy = 1.2 + Math.random() * 2.2;
+                }
+
+                this.size = 11 + Math.random() * 14;
+                this.color = petalColors[Math.floor(Math.random() * petalColors.length)];
+                this.rotation = Math.random() * 360;
+                this.spinSpeed = (Math.random() - 0.5) * 2.5;
+                this.oscillationSpeed = 0.02 + Math.random() * 0.03;
+                this.oscillationDistance = 20 + Math.random() * 35;
+                this.oscillationOffset = Math.random() * Math.PI * 2;
+                this.opacity = 0.6 + Math.random() * 0.4;
+                this.flip = 0;
+                this.flipSpeed = 0.03 + Math.random() * 0.04;
+            }
+
+            update() {
+                this.oscillationOffset += this.oscillationSpeed;
+                this.flip += this.flipSpeed;
+                this.rotation += this.spinSpeed;
+
+                this.x += this.vx + Math.sin(this.oscillationOffset) * 0.7;
+                this.y += this.vy;
+
+                // Hambatan saat burst
+                this.vx *= 0.98;
+                if (this.vy < 1.2) {
+                    this.vy += 0.08;
+                }
+
+                if (this.y > canvas.height + 30 || this.x < -40 || this.x > canvas.width + 40) {
+                    this.reset(false);
+                }
+            }
+
+            draw() {
+                ctx.save();
+                ctx.translate(this.x, this.y);
+                ctx.rotate((this.rotation * Math.PI) / 180);
+                ctx.scale(Math.cos(this.flip), 1);
+                ctx.fillStyle = this.color;
+                ctx.globalAlpha = this.opacity;
+
+                // Bentuk kelopak bunga organik lembut
+                ctx.beginPath();
+                ctx.moveTo(0, 0);
+                ctx.bezierCurveTo(this.size * 0.5, -this.size * 0.8, this.size, -this.size * 0.2, 0, this.size * 1.1);
+                ctx.bezierCurveTo(-this.size, -this.size * 0.2, -this.size * 0.5, -this.size * 0.8, 0, 0);
+                ctx.fill();
+
+                // Kilau tulang kelopak tengah yang anggun
+                ctx.strokeStyle = 'rgba(255, 255, 255, 0.45)';
+                ctx.lineWidth = 0.8;
+                ctx.beginPath();
+                ctx.moveTo(0, 0);
+                ctx.quadraticCurveTo(0, this.size * 0.5, 0, this.size * 0.9);
+                ctx.stroke();
+
+                ctx.restore();
+            }
+        }
+
+        class Sparkle {
+            constructor(burst = false) {
+                this.reset(burst);
+            }
+
+            reset(burst = false) {
+                if (burst) {
+                    this.x = canvas.width / 2 + (Math.random() - 0.5) * 160;
+                    this.y = canvas.height * 0.45 + (Math.random() - 0.5) * 120;
+                    const angle = Math.random() * Math.PI * 2;
+                    const speed = 2 + Math.random() * 6;
+                    this.vx = Math.cos(angle) * speed;
+                    this.vy = Math.sin(angle) * speed - 1.5;
+                } else {
+                    this.x = Math.random() * canvas.width;
+                    this.y = Math.random() * canvas.height;
+                    this.vx = (Math.random() - 0.5) * 0.5;
+                    this.vy = (Math.random() - 0.5) * 0.5;
+                }
+                this.size = 2 + Math.random() * 3.5;
+                this.color = Math.random() > 0.3 ? '#FFF83F' : '#FFCD54';
+                this.life = 0;
+                this.maxLife = 50 + Math.random() * 60;
+                this.opacity = 0;
+            }
+
+            update() {
+                this.life++;
+                this.x += this.vx;
+                this.y += this.vy;
+                const progress = this.life / this.maxLife;
+                if (progress < 0.5) {
+                    this.opacity = progress * 2;
+                } else {
+                    this.opacity = (1 - progress) * 2;
+                }
+                if (this.life >= this.maxLife) {
+                    this.reset(false);
+                }
+            }
+
+            draw() {
+                ctx.save();
+                ctx.translate(this.x, this.y);
+                ctx.fillStyle = this.color;
+                ctx.globalAlpha = Math.max(0, Math.min(1, this.opacity * 0.85));
+
+                // Bintang berkilau 4 sudut (Star Sparkle)
+                ctx.beginPath();
+                ctx.arc(0, 0, this.size * 0.5, 0, Math.PI * 2);
+                ctx.fill();
+
+                ctx.beginPath();
+                ctx.moveTo(-this.size * 1.5, 0);
+                ctx.lineTo(this.size * 1.5, 0);
+                ctx.moveTo(0, -this.size * 1.5);
+                ctx.lineTo(0, this.size * 1.5);
+                ctx.strokeStyle = this.color;
+                ctx.lineWidth = 1;
+                ctx.stroke();
+
+                ctx.restore();
+            }
+        }
+
+        function initPetals() {
+            petals = [];
+            sparkles = [];
+            const petalCount = window.innerWidth < 640 ? 32 : 55;
+            const sparkleCount = window.innerWidth < 640 ? 20 : 35;
+
+            // Efek burst awal saat pertama dibuka
+            for (let i = 0; i < petalCount; i++) {
+                petals.push(new Petal(true));
+            }
+            for (let i = 0; i < sparkleCount; i++) {
+                sparkles.push(new Sparkle(true));
+            }
+        }
+
+        function animatePetals() {
+            if (!petalsActive) return;
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            sparkles.forEach(s => {
+                s.update();
+                s.draw();
+            });
+
+            petals.forEach(p => {
+                p.update();
+                p.draw();
+            });
+
+            animationFrameId = requestAnimationFrame(animatePetals);
+        }
+
+        function startPetalAnimation() {
+            initPetals();
+            petalsActive = true;
+            canvas.classList.remove('opacity-0');
+            canvas.classList.add('opacity-100');
+            if (animationFrameId) cancelAnimationFrame(animationFrameId);
+            animatePetals();
+        }
+
+        function togglePetals() {
+            petalsActive = !petalsActive;
+            const icon = document.getElementById('petal-icon');
+            if (petalsActive) {
+                canvas.classList.remove('opacity-0');
+                canvas.classList.add('opacity-100');
+                icon.className = 'fa-solid fa-seedling text-base text-[#F70063]';
+                animatePetals();
+            } else {
+                canvas.classList.remove('opacity-100');
+                canvas.classList.add('opacity-0');
+                icon.className = 'fa-regular fa-eye-slash text-base text-slate-400';
+                if (animationFrameId) cancelAnimationFrame(animationFrameId);
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+            }
+        }
+
+        // 1. Fungsi Buka Sampul Undangan (Dengan Efek Kelopak Sakura & Sparkle)
+        function openInvitation() {
+            const cover = document.getElementById('cover-overlay');
+            cover.style.transform = 'translateY(-100%)';
+            
+            // Tampilkan navigasi bawah & tombol kontrol
+            musicBtn.classList.remove('hidden');
+            petalBtn.classList.remove('hidden');
+            bottomNav.classList.remove('hidden');
+            bottomNav.classList.add('flex');
+
+            // Luncurkan animasi hujan kelopak bunga romantis
+            startPetalAnimation();
+
+            // Putar musik otomatis
+            music.play().then(() => {
+                isPlaying = true;
+            }).catch(err => console.log("Autoplay dicegah browser:", err));
+        }
+
+        // 2. Fungsi Play/Pause Musik
+        function toggleMusic() {
+            if (isPlaying) {
+                music.pause();
+                musicBtn.classList.remove('animate-spin-slow');
+            } else {
+                music.play();
+                musicBtn.classList.add('animate-spin-slow');
+            }
+            isPlaying = !isPlaying;
+        }
+
+        // 3. Fungsi Salin Nomor Rekening
+        function copyText(text) {
+            navigator.clipboard.writeText(text);
+            alert("Nomor rekening " + text + " berhasil disalin!");
+        }
+
+        // 4. Fungsi Tambah Ucapan Tamu Secara Langsung
+        function submitComment(e) {
+            e.preventDefault();
+            const nama = document.getElementById('input-nama').value;
+            const hadir = document.getElementById('input-hadir').value;
+            const pesan = document.getElementById('input-pesan').value;
+            const list = document.getElementById('comment-list');
+            const badgeColor = hadir === 'Hadir' ? 'bg-emerald-100 text-emerald-700' : 'bg-rose-100 text-rose-700';
+
+            const newComment = `
+                <div class="bg-[#2391FF]/5 p-3.5 rounded-xl border border-[#2391FF]/20">
+                    <div class="flex justify-between items-center mb-1">
+                        <span class="font-bold text-xs text-[#2391FF]">${nama}</span>
+                        <span class="text-[10px] ${badgeColor} px-2 py-0.5 rounded-full font-semibold">${hadir}</span>
+                    </div>
+                    <p class="text-xs text-slate-600">${pesan}</p>
+                </div>
+            `;
+            list.insertAdjacentHTML('afterbegin', newComment);
+            e.target.reset();
+        }
+
+        // 5. Fungsi Baca Nama Tamu dari Link URL (?to=Nama+Tamu)
+        const urlParams = new URLSearchParams(window.location.search);
+        const guest = urlParams.get('to');
+        if (guest) {
+            document.getElementById('guest-name').innerText = guest;
+        }
+
+        // 6. Fungsi Hitung Mundur Waktu (Countdown ke 30 Oktober 2026)
+        const targetDate = new Date("Oct 30, 2026 08:00:00").getTime();
+        setInterval(() => {
+            const now = new Date().getTime();
+            const diff = targetDate - now;
+
+            if (diff > 0) {
+                document.getElementById('days').innerText = String(Math.floor(diff / (1000 * 60 * 60 * 24))).padStart(2, '0');
+                document.getElementById('hours').innerText = String(Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))).padStart(2, '0');
+                document.getElementById('minutes').innerText = String(Math.floor((diff % (1000 * 60 * 60)) / (
