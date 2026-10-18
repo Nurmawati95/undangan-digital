@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 430 100" role="img" aria-label="UNDIGITAL">
+  <defs>
+    <linearGradient id="flameGold" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#FBE9A0"/>
+      <stop offset="0.45" stop-color="#E8C55A"/>
+      <stop offset="1" stop-color="#C89B32"/>
+    </linearGradient>
+    <linearGradient id="textGold" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#E3C158"/>
+      <stop offset="1" stop-color="#C9A13A"/>
+    </linearGradient>
+  </defs>
+  <!-- Ikon: cincin terbuka + api emas di celah -->
+  <path d="M80.1 44.1 A32 32 0 1 1 55.6 23.5" fill="none" stroke="#FFFFFF" stroke-width="13"/>
+  <path d="M68 5 C72 15 78 19 78 25 A10 10 0 1 1 58 25 C58 19 64 15 68 5 Z" fill="url(#flameGold)"/>
+  <!-- Wordmark -->
+  <text x="112" y="70" font-family="Arial, Helvetica, sans-serif" font-size="54" font-weight="700" letter-spacing="1">
+    <tspan fill="#FFFFFF">UN</tspan><tspan fill="url(#textGold)">DIGITAL</tspan>
+  </text>
+</svg>
