@@ -1,0 +1,10 @@
+# File lokal / rahasia - jangan dikirim ke Git / Vercel
+.env
+.vercel/
+node_modules/
+
+# Artefak lokal
+*.log
+.DS_Store
+Thumbs.db
+
