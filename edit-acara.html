@@ -93,7 +93,7 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; }
 <div><label class="lbl">Tempat</label><input id="f-a1-tempat" class="fld" placeholder="Masjid Agung Islamic Center"/></div>
 </div>
 <div><label class="lbl">Alamat Lengkap</label><input id="f-a1-alamat" class="fld" placeholder="Jl. Trans Sulawesi"/></div>
-<div><label class="lbl">Link Google Maps (bisa link place/koordinat — tampil sebagai peta embed)</label><input id="f-a1-maps" class="fld" placeholder="https://www.google.com/maps/place/..."/></div>
+<div><label class="lbl">Link Google Maps Acara 1 (link biasa — boleh kosong, tampil sebagai peta embed)</label><input id="f-a1-maps" class="fld" placeholder="https://www.google.com/maps/place/... (kosongkan jika tidak perlu)"/></div>
 </div>
 </div>
 <div class="sect" data-sect="acara2">
@@ -108,7 +108,7 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; }
 <div><label class="lbl">Tempat</label><input id="f-a2-tempat" class="fld" placeholder="Gedung Serbaguna Bahomohoni"/></div>
 </div>
 <div><label class="lbl">Alamat Lengkap</label><input id="f-a2-alamat" class="fld" placeholder="Jl. Raya Bahomohoni, Morowali"/></div>
-<div><label class="lbl">Link Google Maps (bisa link place/koordinat — tampil sebagai peta embed)</label><input id="f-a2-maps" class="fld" placeholder="https://www.google.com/maps/place/..."/></div>
+<div><label class="lbl">Kode Embed Google Maps Acara 2 (paste kode &lt;iframe&gt; dari menu "Embed a map")</label><input id="f-a2-maps" class="fld" placeholder='<iframe src="https://www.google.com/maps/embed?pb=..."></iframe>'/></div>
 </div>
 </div>
 
@@ -176,6 +176,14 @@ function showSect(k){
 document.querySelectorAll('.sect').forEach(s => s.classList.toggle('active', s.dataset.sect === k));
 document.querySelectorAll('.tabbtn').forEach(b => b.classList.toggle('active', b.dataset.k === k));
 }
+// Rapikan input Google Maps: jika ditempel kode <iframe ...> utuh,
+// cukup simpan URL src-nya saja. &amp; -> & agar query string valid.
+function cleanMaps(v){
+v = (v || '').trim();
+var m = v.match(/<iframe[^>]*\ssrc=["']([^"']+)["']/i);
+if (m) v = m[1];
+return v.replace(/&amp;/g, '&');
+}
 async function init(){
 const q = new URLSearchParams(window.location.search);
 evId = q.get('id');
@@ -221,8 +229,8 @@ tanggal_utama: val('f-tanggal') || null, status: val('f-status'),
 foto_cover: toDirectImg(val('f-foto_cover')), foto_hero: toDirectImg(val('f-foto_hero')),
 mempelai_pria: { nama: val('f-pria-nama'), panggilan: val('f-pria-panggilan'), ortu: val('f-pria-ortu'), ig: val('f-pria-ig'), foto: toDirectImg(val('f-pria-foto')) },
 mempelai_wanita: { nama: val('f-wanita-nama'), panggilan: val('f-wanita-panggilan'), ortu: val('f-wanita-ortu'), ig: val('f-wanita-ig'), foto: toDirectImg(val('f-wanita-foto')) },
-acara1: { nama: val('f-a1-nama'), tanggal: val('f-a1-tanggal'), jam: val('f-a1-jam'), tempat: val('f-a1-tempat'), alamat: val('f-a1-alamat'), maps: val('f-a1-maps') },
-acara2: { nama: val('f-a2-nama'), tanggal: val('f-a2-tanggal'), jam: val('f-a2-jam'), tempat: val('f-a2-tempat'), alamat: val('f-a2-alamat'), maps: val('f-a2-maps') },
+acara1: { nama: val('f-a1-nama'), tanggal: val('f-a1-tanggal'), jam: val('f-a1-jam'), tempat: val('f-a1-tempat'), alamat: val('f-a1-alamat'), maps: cleanMaps(val('f-a1-maps')) },
+acara2: { nama: val('f-a2-nama'), tanggal: val('f-a2-tanggal'), jam: val('f-a2-jam'), tempat: val('f-a2-tempat'), alamat: val('f-a2-alamat'), maps: cleanMaps(val('f-a2-maps')) },
 galeri: val('f-galeri').split('\n').map(s => toDirectImg(s)).filter(Boolean).slice(0, 8),
 kata: { quote: val('f-kata-quote'), sumber: val('f-kata-sumber'), c1j: val('f-kata-c1j'), c1i: val('f-kata-c1i'), c2j: val('f-kata-c2j'), c2i: val('f-kata-c2i'), tutup: val('f-kata-tutup') },
 wa: { nomor: val('f-wa-nomor'), teks: val('f-wa-teks'), pesan: val('f-wa-pesan') },

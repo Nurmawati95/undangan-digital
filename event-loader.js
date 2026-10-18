@@ -38,6 +38,11 @@ return u;
 function toMapEmbed(u) {
 if (!u) return '';
 u = String(u).trim();
+// Jika yang ditempel kode <iframe src="..."> utuh (dari Google Maps > Embed a map),
+// ambil URL src-nya saja. &amp; -> & agar query string valid.
+var mifr = u.match(/<iframe[^>]*\ssrc=["']([^"']+)["']/i);
+if (mifr) u = mifr[1];
+u = u.replace(/&amp;/g, '&');
 if (/google\.com\/maps\/embed/.test(u)) return u;
 var mq = u.match(/[?&](?:q|query)=([^&]+)/);
 if (mq) return 'https://www.google.com/maps?q=' + mq[1] + '&output=embed';
@@ -138,7 +143,7 @@ if (A1.jam) { var pj = c.querySelectorAll('.text-slate-500'); if (pj[0]) pj[0].t
 var inf = c.querySelectorAll('p.text-xs');
 if (A1.tempat && inf[1]) inf[1].textContent = A1.tempat;
 if (A1.alamat && inf[2]) inf[2].textContent = A1.alamat;
-if (A1.maps) { var m1 = c.querySelector('a[href*="maps"]'); if (m1) m1.href = A1.maps; var f1 = c.querySelector('iframe.maps-embed'); if (f1) f1.src = toMapEmbed(A1.maps); }
+if (A1.maps && !/maps\/embed|<iframe/i.test(A1.maps)) { var m1 = c.querySelector('a[href*="maps"]'); if (m1) m1.href = A1.maps; }
 }
 if (cards[1] && (A2.nama || A2.tanggal || A2.jam || A2.tempat || A2.alamat)) {
 var c2 = cards[1];
@@ -148,8 +153,18 @@ if (A2.jam) { var pj2 = c2.querySelectorAll('.text-slate-500'); if (pj2[0]) pj2[
 var inf2 = c2.querySelectorAll('p.text-xs');
 if (A2.tempat && inf2[1]) inf2[1].textContent = A2.tempat;
 if (A2.alamat && inf2[2]) inf2[2].textContent = A2.alamat;
-if (A2.maps) { var m2 = c2.querySelector('a[href*="maps"]'); if (m2) m2.href = A2.maps; var f2 = c2.querySelector('iframe.maps-embed'); if (f2) f2.src = toMapEmbed(A2.maps); }
+var btn2 = c2.querySelector('a[href*="maps"]');
+if (A2.maps) {
+if (!/maps\/embed|<iframe/i.test(A2.maps)) { if (btn2) btn2.href = A2.maps; }
+else if (btn2) { btn2.style.display = 'none'; }
+} else if (btn2) { btn2.style.display = 'none'; }
 }
+// Peta embed per acara: acara 1 dari link biasa, acara 2 dari kode embed.
+// Jika kosong -> sembunyikan iframe (tamu tidak melihat peta default bawaan template).
+var ffm1 = cards[0] ? cards[0].querySelector('iframe.maps-embed') : null;
+if (ffm1) { if (A1.maps) { ffm1.src = toMapEmbed(A1.maps); } else { ffm1.style.display = 'none'; } }
+var ffm2 = cards[1] ? cards[1].querySelector('iframe.maps-embed') : null;
+if (ffm2) { if (A2.maps) { ffm2.src = toMapEmbed(A2.maps); } else { ffm2.style.display = 'none'; } }
 if (d.galeri && d.galeri.length) {
 var g = document.querySelectorAll('#galeri .grid img');
 d.galeri.slice(0, g.length).forEach(function (url, i) { g[i].src = toDirectImg(url); });
