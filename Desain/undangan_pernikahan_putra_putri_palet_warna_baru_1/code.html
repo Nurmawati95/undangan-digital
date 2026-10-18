@@ -327,10 +327,10 @@
 <i class="fa-solid fa-comments text-sm"></i>
 <span class="text-[10px] font-medium">Ucapan</span>
 </a>
-<a class="flex flex-col items-center gap-1 hover:text-[#2391FF] transition" href="/login.html">
-<i class="fa-solid fa-user-lock text-sm"></i>
-<span class="text-[10px] font-medium">Login</span>
-</a>
+<button class="flex flex-col items-center gap-1 hover:text-[#F70063] transition" id="auto-scroll-btn" onclick="toggleAutoScroll()" title="Scroll otomatis antar bagian undangan">
+<i class="fa-solid fa-play text-sm" id="auto-scroll-icon"></i>
+<span class="text-[10px] font-medium" id="auto-scroll-label">Auto</span>
+</button>
 </nav>
 </div>
 <!-- ==========================================
@@ -484,6 +484,73 @@
                 document.getElementById('seconds').innerText = String(Math.floor((diff % (1000 * 60)) / 1000)).padStart(2, '0');
             }
         }, 1000);
+
+        // ====== AUTO SCROLL (tombol "Auto" di navigasi bawah) ======
+        // ON  : halaman discroll otomatis antar bagian tiap 7 detik.
+        // OFF : mode manual, scroll bebas seperti biasa.
+        // Scroll manual (roda mouse / geser jari) otomatis mematikan mode auto.
+        const AUTO_SECTIONS = ['#home', '#mempelai', '#acara', '#galeri', '#ucapan'];
+        let autoScrollOn = false;
+        let autoScrollTimer = null;
+        let autoScrollIdx = -1;
+
+        function renderAutoBtn() {
+            const icon = document.getElementById('auto-scroll-icon');
+            const label = document.getElementById('auto-scroll-label');
+            const btn = document.getElementById('auto-scroll-btn');
+            if (!icon || !label || !btn) return;
+            if (autoScrollOn) {
+                icon.className = 'fa-solid fa-pause text-sm';
+                label.textContent = 'Manual';
+                btn.classList.add('text-[#F70063]');
+            } else {
+                icon.className = 'fa-solid fa-play text-sm';
+                label.textContent = 'Auto';
+                btn.classList.remove('text-[#F70063]');
+            }
+        }
+
+        function autoScrollNext() {
+            autoScrollIdx = (autoScrollIdx + 1) % AUTO_SECTIONS.length;
+            const el = document.querySelector(AUTO_SECTIONS[autoScrollIdx]);
+            if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        function toggleAutoScroll() {
+            autoScrollOn = !autoScrollOn;
+            if (autoScrollOn) {
+                autoScrollNext(); // langsung ke bagian berikutnya
+                autoScrollTimer = setInterval(autoScrollNext, 7000);
+            } else {
+                clearInterval(autoScrollTimer);
+                autoScrollTimer = null;
+            }
+            renderAutoBtn();
+        }
+
+        // Deteksi scroll manual dari pengguna
+        ['wheel', 'touchmove'].forEach(function (ev) {
+            window.addEventListener(ev, function () {
+                if (autoScrollOn) toggleAutoScroll();
+            }, { passive: true });
+        });
+
+        // Sorot menu nav sesuai bagian yang sedang terlihat
+        if ('IntersectionObserver' in window) {
+            const autoObserver = new IntersectionObserver(function (entries) {
+                entries.forEach(function (en) {
+                    if (!en.isIntersecting) return;
+                    const id = '#' + en.target.id;
+                    document.querySelectorAll('#bottom-nav a[href^="#"]').forEach(function (a) {
+                        a.classList.toggle('text-[#2391FF]', a.getAttribute('href') === id);
+                    });
+                });
+            }, { threshold: 0.5 });
+            AUTO_SECTIONS.forEach(function (s) {
+                const el = document.querySelector(s);
+                if (el) autoObserver.observe(el);
+            });
+        }
     </script>
 </body>
 </html>
