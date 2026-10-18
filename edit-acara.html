@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html class="scroll-smooth" lang="id">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Edit Acara - UNDIGITAL</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet"/>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+body { font-family: 'Plus Jakarta Sans', sans-serif; }
+.sect { display: none; }
+.sect.active { display: block; }
+.tabbtn.active { background: #0b1a30; color: #fff; }
+.fld { width: 100%; font-size: 12px; padding: 10px 12px; border-radius: 12px; border: 1px solid #cbd5e1; background: #fff; }
+.fld:focus { outline: none; border-color: #2391FF; box-shadow: 0 0 0 1px #2391FF; }
+.lbl { font-size: 11px; font-weight: 600; color: #334155; display: block; margin-bottom: 4px; }
+</style>
+</head>
+<body class="bg-slate-100 min-h-screen">
+<div id="loading" class="min-h-screen flex flex-col items-center justify-center gap-3 text-slate-500">
+<i class="fa-solid fa-circle-notch fa-spin text-3xl text-[#F70063]"></i>
+<p class="text-sm">Memuat data acara...</p>
+</div>
+<div id="app" class="hidden">
+<nav class="bg-[#0b1a30] text-white px-4 py-3 flex items-center justify-between sticky top-0 z-20 shadow">
+<a href="/dashboard.html" class="text-xs font-semibold bg-white/10 hover:bg-[#F70063] px-3.5 py-2 rounded-xl transition"><i class="fa-solid fa-arrow-left mr-1"></i> Dashboard</a>
+<p id="ev-title" class="font-bold text-sm truncate mx-2">Edit Acara</p>
+<button onclick="simpanSemua()" id="btn-save" class="text-xs font-semibold bg-[#F70063] hover:bg-[#d60055] px-4 py-2 rounded-xl transition"><i class="fa-solid fa-floppy-disk mr-1"></i> Simpan</button>
+</nav>
+<div class="max-w-3xl mx-auto p-4 pb-24">
+<p id="save-msg" class="text-xs mb-3"></p>
+<div id="cover-prev" class="bg-white rounded-2xl overflow-hidden shadow-sm mb-4">
+<img id="prev-img" src="" alt="Foto acara" class="w-full h-44 object-cover bg-slate-200"/>
+<div class="p-4 flex flex-wrap items-center gap-2">
+<span id="prev-slug" class="text-[11px] text-slate-500"></span>
+<span class="flex-1"></span>
+<a id="prev-link" href="#" target="_blank" class="text-[11px] font-semibold text-[#2391FF] hover:underline"><i class="fa-solid fa-eye mr-1"></i>Lihat Undangan</a>
+</div>
+</div>
+<div class="flex gap-2 overflow-x-auto pb-2 mb-4" id="tabs"></div>
+<div class="bg-white rounded-2xl p-5 shadow-sm">
+<div class="sect" data-sect="dasar">
+<h2 class="font-bold text-sm mb-3">INFO DASAR &amp; TAMPILAN</h2>
+<div class="grid gap-3">
+<div><label class="lbl">Judul Acara</label><input id="f-judul" class="fld"/></div>
+<div class="grid grid-cols-2 gap-3">
+<div><label class="lbl">Slug (/u/...)</label><input id="f-slug" class="fld"/></div>
+<div><label class="lbl">Template</label><select id="f-template" class="fld"><option value="palet-1">Palet Warna Baru 1</option><option value="palet-2">Palet Warna Baru 2</option></select></div>
+</div>
+<div class="grid grid-cols-2 gap-3">
+<div><label class="lbl">Tanggal Utama</label><input id="f-tanggal" type="date" class="fld"/></div>
+<div><label class="lbl">Status</label><select id="f-status" class="fld"><option value="draft">Draft</option><option value="publish">Publish</option></select></div>
+</div>
+<div><label class="lbl">URL Foto Cover</label><input id="f-foto_cover" class="fld" placeholder="https://..."/></div>
+<div><label class="lbl">URL Foto Hero</label><input id="f-foto_hero" class="fld" placeholder="https://..."/></div>
+</div>
+</div>
+<div class="sect" data-sect="pria">
+<h2 class="font-bold text-sm mb-3">MEMPELAI PRIA</h2>
+<div class="grid gap-3">
+<div><label class="lbl">Nama Lengkap &amp; Gelar</label><input id="f-pria-nama" class="fld" placeholder="Putra Pratama, S.Kom"/></div>
+<div><label class="lbl">Nama Panggilan</label><input id="f-pria-panggilan" class="fld" placeholder="Putra"/></div>
+<div><label class="lbl">Anak ke- &amp; Orang Tua</label><input id="f-pria-ortu" class="fld" placeholder="Putra Pertama dari Bapak H. Ahmad & Ibu Hj. Siti"/></div>
+<div class="grid grid-cols-2 gap-3">
+<div><label class="lbl">Instagram (tanpa @)</label><input id="f-pria-ig" class="fld" placeholder="putrapratama"/></div>
+<div><label class="lbl">URL Foto</label><input id="f-pria-foto" class="fld" placeholder="https://..."/></div>
+</div>
+</div>
+</div>
+<div class="sect" data-sect="wanita">
+<h2 class="font-bold text-sm mb-3">MEMPELAI WANITA</h2>
+<div class="grid gap-3">
+<div><label class="lbl">Nama Lengkap &amp; Gelar</label><input id="f-wanita-nama" class="fld" placeholder="Putri Ayu Lestari, S.E"/></div>
+<div><label class="lbl">Nama Panggilan</label><input id="f-wanita-panggilan" class="fld" placeholder="Putri"/></div>
+<div><label class="lbl">Anak ke- &amp; Orang Tua</label><input id="f-wanita-ortu" class="fld" placeholder="Putri Kedua dari Bapak H. Hendra & Ibu Hj. Rina"/></div>
+<div class="grid grid-cols-2 gap-3">
+<div><label class="lbl">Instagram (tanpa @)</label><input id="f-wanita-ig" class="fld" placeholder="putriayulestari"/></div>
+<div><label class="lbl">URL Foto</label><input id="f-wanita-foto" class="fld" placeholder="https://..."/></div>
+</div>
+</div>
+</div>
+<div class="sect" data-sect="acara1">
+<h2 class="font-bold text-sm mb-3">ALAMAT &amp; TANGGAL ACARA 1</h2>
+<div class="grid gap-3">
+<div class="grid grid-cols-2 gap-3">
+<div><label class="lbl">Nama Acara</label><input id="f-a1-nama" class="fld" placeholder="Akad Nikah"/></div>
+<div><label class="lbl">Tanggal</label><input id="f-a1-tanggal" type="date" class="fld"/></div>
+</div>
+<div class="grid grid-cols-2 gap-3">
+<div><label class="lbl">Jam</label><input id="f-a1-jam" class="fld" placeholder="08.00 WITA - Selesai"/></div>
+<div><label class="lbl">Tempat</label><input id="f-a1-tempat" class="fld" placeholder="Masjid Agung Islamic Center"/></div>
+</div>
+<div><label class="lbl">Alamat Lengkap</label><input id="f-a1-alamat" class="fld" placeholder="Jl. Trans Sulawesi"/></div>
+<div><label class="lbl">Link Google Maps</label><input id="f-a1-maps" class="fld" placeholder="https://maps.google.com/..."/></div>
+</div>
+</div>
+<div class="sect" data-sect="acara2">
+<h2 class="font-bold text-sm mb-3">ALAMAT &amp; TANGGAL ACARA 2</h2>
+<div class="grid gap-3">
+<div class="grid grid-cols-2 gap-3">
+<div><label class="lbl">Nama Acara</label><input id="f-a2-nama" class="fld" placeholder="Resepsi Pernikahan"/></div>
+<div><label class="lbl">Tanggal</label><input id="f-a2-tanggal" type="date" class="fld"/></div>
+</div>
+<div class="grid grid-cols-2 gap-3">
+<div><label class="lbl">Jam</label><input id="f-a2-jam" class="fld" placeholder="11.00 WITA - Selesai"/></div>
+<div><label class="lbl">Tempat</label><input id="f-a2-tempat" class="fld" placeholder="Gedung Serbaguna Bahomohoni"/></div>
+</div>
+<div><label class="lbl">Alamat Lengkap</label><input id="f-a2-alamat" class="fld" placeholder="Jl. Raya Bahomohoni, Morowali"/></div>
+<div><label class="lbl">Link Google Maps</label><input id="f-a2-maps" class="fld" placeholder="https://maps.google.com/..."/></div>
+</div>
+</div>
+
+<div class="sect" data-sect="galeri">
+<h2 class="font-bold text-sm mb-1">GALERY FOTO</h2>
+<p class="text-[11px] text-slate-500 mb-3">Satu URL per baris, maksimal 8 foto.</p>
+<textarea id="f-galeri" rows="6" class="fld" placeholder="https://...foto1"></textarea>
+</div>
+<div class="sect" data-sect="kata">
+<h2 class="font-bold text-sm mb-3">UCAPAN &amp; KATA-KATA</h2>
+<div class="grid gap-3">
+<div><label class="lbl">Ayat / Quote Pembuka</label><textarea id="f-kata-quote" rows="3" class="fld"></textarea></div>
+<div><label class="lbl">Sumber Quote</label><input id="f-kata-sumber" class="fld" placeholder="QS. Ar-Rum: 21"/></div>
+<div><label class="lbl">Cerita 1 - Judul</label><input id="f-kata-c1j" class="fld" placeholder="2023 - Pertama Bertemu"/></div>
+<div><label class="lbl">Cerita 1 - Isi</label><textarea id="f-kata-c1i" rows="2" class="fld"></textarea></div>
+<div><label class="lbl">Cerita 2 - Judul</label><input id="f-kata-c2j" class="fld" placeholder="2026 - Lamaran & Pernikahan"/></div>
+<div><label class="lbl">Cerita 2 - Isi</label><textarea id="f-kata-c2i" rows="2" class="fld"></textarea></div>
+<div><label class="lbl">Kalimat Penutup</label><textarea id="f-kata-tutup" rows="2" class="fld"></textarea></div>
+</div>
+</div>
+<div class="sect" data-sect="wa">
+<h2 class="font-bold text-sm mb-3">TAMPILAN WA</h2>
+<div class="grid gap-3">
+<div><label class="lbl">Nomor WA Konfirmasi (62...)</label><input id="f-wa-nomor" class="fld" placeholder="6281234567890"/></div>
+<div><label class="lbl">Teks Tombol WA</label><input id="f-wa-teks" class="fld" placeholder="Konfirmasi via WhatsApp"/></div>
+<div><label class="lbl">Pesan Otomatis WA</label><textarea id="f-wa-pesan" rows="3" class="fld" placeholder="Assalamu'alaikum, saya akan hadir..."></textarea></div>
+</div>
+</div>
+<div class="sect" data-sect="lain">
+<h2 class="font-bold text-sm mb-3">LAINNYA</h2>
+<div class="grid gap-3">
+<div><label class="lbl">Rekening 1 (Bank - Nomor - Nama)</label><input id="f-lain-rek1" class="fld" placeholder="BANK BRI - 1234567890123 - a.n Putra Pratama"/></div>
+<div><label class="lbl">Rekening 2 (opsional)</label><input id="f-lain-rek2" class="fld" placeholder="BANK BSI - ... - a.n Putri Ayu Lestari"/></div>
+<div><label class="lbl">URL Musik Latar (mp3)</label><input id="f-lain-musik" class="fld" placeholder="https://.../lagu.mp3"/></div>
+<div><label class="lbl">Nama Tamu Default</label><input id="f-lain-tamu" class="fld" placeholder="Bapak Budi & Partner"/></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<script>
+const SUPABASE_URL = 'https://nrotipuxmfbiqvzolzox.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_aWyIwLYXvHDgHbTYKDnVjA_54uijLKx';
+const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const SECTS = [['dasar','INFO DASAR'],['pria','PRIA'],['wanita','WANITA'],['acara1','ACARA 1'],['acara2','ACARA 2'],['galeri','GALERY'],['kata','UCAPAN'],['wa','WA'],['lain','LAINNYA']];
+let evId = null;
+function val(id){ return document.getElementById(id).value || ''; }
+function setVal(id, v){ document.getElementById(id).value = v ?? ''; }
+function showSect(k){
+document.querySelectorAll('.sect').forEach(s => s.classList.toggle('active', s.dataset.sect === k));
+document.querySelectorAll('.tabbtn').forEach(b => b.classList.toggle('active', b.dataset.k === k));
+}
+async function init(){
+const q = new URLSearchParams(window.location.search);
+evId = q.get('id');
+if (!evId) { window.location.href = '/dashboard.html'; return; }
+document.getElementById('tabs').innerHTML = SECTS.map(([k,l],i) => `<button data-k="${k}" onclick="showSect('${k}')" class="tabbtn shrink-0 text-[11px] font-bold px-4 py-2 rounded-full bg-white border border-slate-200 ${i===0?'active':''}">${l}</button>`).join('');
+const { data: { session } } = await sb.auth.getSession();
+if (!session) { window.location.href = '/login.html'; return; }
+const { data, error } = await sb.from('events').select('*').eq('id', evId).single();
+if (error || !data) { alert('Acara tidak ditemukan / bukan milik Anda.'); window.location.href = '/dashboard.html'; return; }
+const d = data;
+document.getElementById('ev-title').textContent = d.judul;
+setVal('f-judul', d.judul); setVal('f-slug', d.slug); setVal('f-template', d.template);
+setVal('f-tanggal', d.tanggal_utama); setVal('f-status', d.status);
+setVal('f-foto_cover', d.foto_cover); setVal('f-foto_hero', d.foto_hero);
+const P = d.mempelai_pria || {}, W = d.mempelai_wanita || {};
+setVal('f-pria-nama', P.nama); setVal('f-pria-panggilan', P.panggilan); setVal('f-pria-ortu', P.ortu); setVal('f-pria-ig', P.ig); setVal('f-pria-foto', P.foto);
+setVal('f-wanita-nama', W.nama); setVal('f-wanita-panggilan', W.panggilan); setVal('f-wanita-ortu', W.ortu); setVal('f-wanita-ig', W.ig); setVal('f-wanita-foto', W.foto);
+const A1 = d.acara1 || {}, A2 = d.acara2 || {};
+setVal('f-a1-nama', A1.nama); setVal('f-a1-tanggal', A1.tanggal); setVal('f-a1-jam', A1.jam); setVal('f-a1-tempat', A1.tempat); setVal('f-a1-alamat', A1.alamat); setVal('f-a1-maps', A1.maps);
+setVal('f-a2-nama', A2.nama); setVal('f-a2-tanggal', A2.tanggal); setVal('f-a2-jam', A2.jam); setVal('f-a2-tempat', A2.tempat); setVal('f-a2-alamat', A2.alamat); setVal('f-a2-maps', A2.maps);
+setVal('f-galeri', (d.galeri || []).join('\n'));
+const K = d.kata || {};
+setVal('f-kata-quote', K.quote); setVal('f-kata-sumber', K.sumber); setVal('f-kata-c1j', K.c1j); setVal('f-kata-c1i', K.c1i); setVal('f-kata-c2j', K.c2j); setVal('f-kata-c2i', K.c2i); setVal('f-kata-tutup', K.tutup);
+const WA = d.wa || {};
+setVal('f-wa-nomor', WA.nomor); setVal('f-wa-teks', WA.teks); setVal('f-wa-pesan', WA.pesan);
+const L = d.lainnya || {};
+setVal('f-lain-rek1', L.rek1); setVal('f-lain-rek2', L.rek2); setVal('f-lain-musik', L.musik); setVal('f-lain-tamu', L.tamu);
+document.getElementById('prev-img').src = d.foto_cover || d.foto_hero || '';
+document.getElementById('prev-slug').textContent = 'Link: /u/' + d.slug;
+document.getElementById('prev-link').href = '/u/' + d.slug;
+document.getElementById('loading').classList.add('hidden');
+document.getElementById('app').classList.remove('hidden');
+showSect('dasar');
+}
+async function simpanSemua(){
+const msg = document.getElementById('save-msg');
+const btn = document.getElementById('btn-save');
+btn.disabled = true;
+msg.textContent = 'Menyimpan...'; msg.className = 'text-xs mb-3 text-sky-600';
+const payload = {
+judul: val('f-judul'), slug: val('f-slug').toLowerCase().trim(), template: val('f-template'),
+tanggal_utama: val('f-tanggal') || null, status: val('f-status'),
+foto_cover: val('f-foto_cover'), foto_hero: val('f-foto_hero'),
+mempelai_pria: { nama: val('f-pria-nama'), panggilan: val('f-pria-panggilan'), ortu: val('f-pria-ortu'), ig: val('f-pria-ig'), foto: val('f-pria-foto') },
+mempelai_wanita: { nama: val('f-wanita-nama'), panggilan: val('f-wanita-panggilan'), ortu: val('f-wanita-ortu'), ig: val('f-wanita-ig'), foto: val('f-wanita-foto') },
+acara1: { nama: val('f-a1-nama'), tanggal: val('f-a1-tanggal'), jam: val('f-a1-jam'), tempat: val('f-a1-tempat'), alamat: val('f-a1-alamat'), maps: val('f-a1-maps') },
+acara2: { nama: val('f-a2-nama'), tanggal: val('f-a2-tanggal'), jam: val('f-a2-jam'), tempat: val('f-a2-tempat'), alamat: val('f-a2-alamat'), maps: val('f-a2-maps') },
+galeri: val('f-galeri').split('\n').map(s => s.trim()).filter(Boolean).slice(0, 8),
+kata: { quote: val('f-kata-quote'), sumber: val('f-kata-sumber'), c1j: val('f-kata-c1j'), c1i: val('f-kata-c1i'), c2j: val('f-kata-c2j'), c2i: val('f-kata-c2i'), tutup: val('f-kata-tutup') },
+wa: { nomor: val('f-wa-nomor'), teks: val('f-wa-teks'), pesan: val('f-wa-pesan') },
+lainnya: { rek1: val('f-lain-rek1'), rek2: val('f-lain-rek2'), musik: val('f-lain-musik'), tamu: val('f-lain-tamu') },
+updated_at: new Date().toISOString()
+};
+const { error } = await sb.from('events').update(payload).eq('id', evId);
+btn.disabled = false;
+if (error) { msg.textContent = 'Gagal menyimpan: ' + error.message; msg.className = 'text-xs mb-3 text-rose-600'; return; }
+msg.textContent = 'Tersimpan! Link undangan: /u/' + payload.slug; msg.className = 'text-xs mb-3 text-emerald-600';
+document.getElementById('ev-title').textContent = payload.judul;
+document.getElementById('prev-img').src = payload.foto_cover || payload.foto_hero || '';
+document.getElementById('prev-slug').textContent = 'Link: /u/' + payload.slug;
+document.getElementById('prev-link').href = '/u/' + payload.slug;
+}
+init();
+</script>
+</body>
+</html>
+

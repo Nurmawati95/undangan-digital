@@ -11,6 +11,9 @@
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;0,700;1,600&amp;family=Great+Vibes&amp;family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
 <!-- FontAwesome untuk Ikon -->
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet"/>
+<!-- Supabase JS Client (untuk Ucapan & RSVP permanen + data acara dinamis) -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="/event-loader.js"></script>
 <style>
         :root {
             --color-blue: #2391FF;
@@ -50,7 +53,7 @@
 </head>
 <body class="flex justify-center items-start min-h-screen relative selection:bg-[#F70063] selection:text-white">
 <!-- BACKGROUND BLUR UNTUK TAMPILAN LAPTOP/PC -->
-<div class="fixed inset-0 bg-cover bg-center blur-md opacity-30 z-0 hidden md:block" style="background-image: url('https://www.gstatic.com/labs-code/stitch/stitch-placeholder-300x300.svg');">
+<div class="fixed inset-0 bg-cover bg-center blur-md opacity-30 z-0 hidden md:block" style="background-image: url('https://images.pexels.com/photos/5754120/pexels-photo-5754120.jpeg?auto=compress&cs=tinysrgb&w=800');">
 </div>
 
 <!-- CANVAS ANIMASI KELOPAK BUNGA & SPARKLE (EFEK ROMANTIS) -->
@@ -62,7 +65,7 @@
              1. SAMPUL DEPAN (FULL SCREEN OVERLAY)
         =========================================== -->
 <div class="fixed inset-0 z-50 flex justify-center bg-slate-950/90 transition-transform duration-1000 ease-in-out" id="cover-overlay">
-<div class="w-full max-w-[480px] full-screen-dvh relative flex flex-col justify-between p-8 text-center text-white bg-cover bg-center" style="background-image: linear-gradient(to bottom, rgba(11,26,48,0.55), rgba(11,26,48,0.92)), url('https://www.gstatic.com/labs-code/stitch/stitch-placeholder-300x300.svg');">
+<div class="w-full max-w-[480px] full-screen-dvh relative flex flex-col justify-between p-8 text-center text-white bg-cover bg-center" style="background-image: linear-gradient(to bottom, rgba(11,26,48,0.55), rgba(11,26,48,0.92)), url('https://images.pexels.com/photos/15877743/pexels-photo-15877743.jpeg?auto=compress&cs=tinysrgb&w=800');">
 <!-- Bagian Atas Sampul -->
 <div class="mt-8">
 <p class="tracking-[0.3em] text-xs uppercase text-[#FFF83F] font-semibold mb-2">The Wedding Of</p>
@@ -92,7 +95,7 @@
 <p class="text-xs tracking-[0.25em] uppercase text-[#2391FF] font-bold mb-3">We Are Getting Married</p>
 <!-- Bingkai Foto Melengkung (Arch) -->
 <div class="w-60 h-80 rounded-t-full border-4 border-[#FFCD54] p-2 shadow-2xl mb-6 bg-white/70 backdrop-blur-sm">
-<img alt="Putra &amp; Putri" class="w-full h-full object-cover rounded-t-full" src="https://www.gstatic.com/labs-code/stitch/stitch-placeholder-300x300.svg"/>
+<img alt="Putra &amp; Putri - Pengantin Muslim" class="w-full h-full object-cover rounded-t-full" src="https://images.pexels.com/photos/15877743/pexels-photo-15877743.jpeg?auto=compress&cs=tinysrgb&w=600"/>
 </div>
 <h1 class="font-esthetic text-5xl text-[#2391FF] mb-2">Putra &amp; Putri</h1>
 <p class="text-sm text-slate-600 mb-6 font-semibold tracking-wider">30 . 10 . 2026</p>
@@ -130,7 +133,7 @@
 </p>
 <!-- Mempelai Pria -->
 <div class="mb-8">
-<img alt="Mempelai Pria" class="w-36 h-36 rounded-full object-cover mx-auto border-4 border-[#2391FF] shadow-lg mb-4" src="https://www.gstatic.com/labs-code/stitch/stitch-placeholder-300x300.svg"/>
+<img alt="Mempelai Pria - Muslim" class="w-36 h-36 rounded-full object-cover mx-auto border-4 border-[#2391FF] shadow-lg mb-4" src="https://images.pexels.com/photos/1043474/pexels-photo-1043474.jpeg?auto=compress&cs=tinysrgb&w=400"/>
 <h3 class="font-serif-title text-3xl font-bold text-slate-900">Putra Pratama, S.Kom</h3>
 <p class="text-xs text-slate-500 mt-1">Putra Pertama dari Bapak H. Ahmad &amp; Ibu Hj. Siti</p>
 <a class="inline-flex items-center gap-1.5 text-xs bg-[#2391FF]/10 text-[#2391FF] font-medium border border-[#2391FF]/30 px-3.5 py-1.5 rounded-full mt-3 hover:bg-[#2391FF] hover:text-white transition" href="https://instagram.com" target="_blank">
@@ -140,7 +143,7 @@
 <div class="font-esthetic text-5xl text-[#F70063] my-6">&amp;</div>
 <!-- Mempelai Wanita -->
 <div>
-<img alt="Mempelai Wanita" class="w-36 h-36 rounded-full object-cover mx-auto border-4 border-[#F70063] shadow-lg mb-4" src="https://www.gstatic.com/labs-code/stitch/stitch-placeholder-300x300.svg"/>
+<img alt="Mempelai Wanita - Muslimah Berhijab" class="w-36 h-36 rounded-full object-cover mx-auto border-4 border-[#F70063] shadow-lg mb-4" src="https://images.pexels.com/photos/15032268/pexels-photo-15032268.jpeg?auto=compress&cs=tinysrgb&w=400"/>
 <h3 class="font-serif-title text-3xl font-bold text-slate-900">Putri Ayu Lestari, S.E</h3>
 <p class="text-xs text-slate-500 mt-1">Putri Kedua dari Bapak H. Hendra &amp; Ibu Hj. Rina</p>
 <a class="inline-flex items-center gap-1.5 text-xs bg-[#F70063]/10 text-[#F70063] font-medium border border-[#F70063]/30 px-3.5 py-1.5 rounded-full mt-3 hover:bg-[#F70063] hover:text-white transition" href="https://instagram.com" target="_blank">
@@ -200,19 +203,19 @@
 <!-- Grid Galeri Foto -->
 <div class="grid grid-cols-2 gap-3">
 <div class="relative rounded-xl overflow-hidden shadow-sm group">
-<img alt="Galeri 1" class="w-full h-44 object-cover group-hover:scale-105 transition duration-300" src="https://www.gstatic.com/labs-code/stitch/stitch-placeholder-300x300.svg"/>
+<img alt="Galeri 1 - Pengantin Muslim" class="w-full h-44 object-cover group-hover:scale-105 transition duration-300" src="https://images.pexels.com/photos/15877743/pexels-photo-15877743.jpeg?auto=compress&cs=tinysrgb&w=600"/>
 <div class="absolute inset-0 bg-gradient-to-t from-[#2391FF]/40 to-transparent opacity-0 group-hover:opacity-100 transition"></div>
 </div>
 <div class="relative rounded-xl overflow-hidden shadow-sm group">
-<img alt="Galeri 2" class="w-full h-44 object-cover group-hover:scale-105 transition duration-300" src="https://www.gstatic.com/labs-code/stitch/stitch-placeholder-300x300.svg"/>
+<img alt="Galeri 2 - Pengantin Muslim" class="w-full h-44 object-cover group-hover:scale-105 transition duration-300" src="https://images.pexels.com/photos/5754120/pexels-photo-5754120.jpeg?auto=compress&cs=tinysrgb&w=600"/>
 <div class="absolute inset-0 bg-gradient-to-t from-[#F70063]/40 to-transparent opacity-0 group-hover:opacity-100 transition"></div>
 </div>
 <div class="relative rounded-xl overflow-hidden shadow-sm group">
-<img alt="Galeri 3" class="w-full h-44 object-cover group-hover:scale-105 transition duration-300" src="https://www.gstatic.com/labs-code/stitch/stitch-placeholder-300x300.svg"/>
+<img alt="Galeri 3 - Pengantin Muslim" class="w-full h-44 object-cover group-hover:scale-105 transition duration-300" src="https://images.pexels.com/photos/1043474/pexels-photo-1043474.jpeg?auto=compress&cs=tinysrgb&w=600"/>
 <div class="absolute inset-0 bg-gradient-to-t from-[#FFCD54]/40 to-transparent opacity-0 group-hover:opacity-100 transition"></div>
 </div>
 <div class="relative rounded-xl overflow-hidden shadow-sm group">
-<img alt="Galeri 4" class="w-full h-44 object-cover group-hover:scale-105 transition duration-300" src="https://www.gstatic.com/labs-code/stitch/stitch-placeholder-300x300.svg"/>
+<img alt="Galeri 4 - Pengantin Muslim" class="w-full h-44 object-cover group-hover:scale-105 transition duration-300" src="https://images.pexels.com/photos/15032268/pexels-photo-15032268.jpeg?auto=compress&cs=tinysrgb&w=600"/>
 <div class="absolute inset-0 bg-gradient-to-t from-[#2391FF]/40 to-transparent opacity-0 group-hover:opacity-100 transition"></div>
 </div>
 </div>
@@ -610,27 +613,82 @@
             alert("Nomor rekening " + text + " berhasil disalin!");
         }
 
-        // 4. Fungsi Tambah Ucapan Tamu Secara Langsung
-        function submitComment(e) {
-            e.preventDefault();
-            const nama = document.getElementById('input-nama').value;
-            const hadir = document.getElementById('input-hadir').value;
-            const pesan = document.getElementById('input-pesan').value;
-            const list = document.getElementById('comment-list');
-            const badgeColor = hadir === 'Hadir' ? 'bg-emerald-100 text-emerald-700' : 'bg-rose-100 text-rose-700';
+        // 4. UCAPAN & RSVP via Supabase (tersimpan permanen, per acara)
+        const SUPABASE_URL = 'https://nrotipuxmfbiqvzolzox.supabase.co';
+        const SUPABASE_ANON_KEY = 'sb_publishable_aWyIwLYXvHDgHbTYKDnVjA_54uijLKx';
+        const supabaseClient = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
 
-            const newComment = `
-                <div class="bg-[#2391FF]/5 p-3.5 rounded-xl border border-[#2391FF]/20">
+        function escapeHtml(str) {
+            return String(str).replace(/[&<>"']/g, (c) => ({
+                '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+            }[c]));
+        }
+
+        function renderComment(nama, hadir, pesan) {
+            const badgeColor = hadir === 'Hadir' ? 'bg-emerald-100 text-emerald-700' : 'bg-rose-100 text-rose-700';
+            return `
+                <div class="bg-[#FAF9F6] p-3.5 rounded-xl border border-slate-100">
                     <div class="flex justify-between items-center mb-1">
-                        <span class="font-bold text-xs text-[#2391FF]">${nama}</span>
-                        <span class="text-[10px] ${badgeColor} px-2 py-0.5 rounded-full font-semibold">${hadir}</span>
+                        <span class="font-bold text-xs text-[#2391FF]">${escapeHtml(nama)}</span>
+                        <span class="text-[10px] ${badgeColor} px-2 py-0.5 rounded-full font-semibold">${escapeHtml(hadir)}</span>
                     </div>
-                    <p class="text-xs text-slate-600">${pesan}</p>
+                    <p class="text-xs text-slate-600">${escapeHtml(pesan)}</p>
                 </div>
             `;
-            list.insertAdjacentHTML('afterbegin', newComment);
+        }
+
+        async function loadUcapan() {
+            const list = document.getElementById('comment-list');
+            if (!supabaseClient) return;
+            for (let i = 0; i < 50 && window.__EVENT_ID__ === undefined; i++) {
+                await new Promise((r) => setTimeout(r, 100));
+            }
+            list.innerHTML = '<p class="text-xs text-slate-400 text-center py-4">Memuat ucapan...</p>';
+            let q = supabaseClient.from('ucapan').select('nama,hadir,pesan').order('created_at', { ascending: false }).limit(50);
+            if (window.__EVENT_ID__) q = q.eq('event_id', window.__EVENT_ID__);
+            const { data, error } = await q;
+            if (error) {
+                console.error('Gagal memuat ucapan:', error);
+                list.innerHTML = '<p class="text-xs text-rose-500 text-center py-4">Gagal memuat ucapan. Coba refresh halaman.</p>';
+                return;
+            }
+            if (!data || data.length === 0) {
+                list.innerHTML = '<p class="text-xs text-slate-400 text-center py-4">Belum ada ucapan. Jadilah yang pertama mengirim doa terbaik!</p>';
+                return;
+            }
+            list.innerHTML = data.map((u) => renderComment(u.nama, u.hadir, u.pesan)).join('');
+        }
+
+        async function submitComment(e) {
+            e.preventDefault();
+            const nama = document.getElementById('input-nama').value.trim();
+            const hadir = document.getElementById('input-hadir').value;
+            const pesan = document.getElementById('input-pesan').value.trim();
+            const list = document.getElementById('comment-list');
+            if (!nama || !pesan) return;
+            if (!supabaseClient) {
+                alert('Koneksi database belum siap. Coba refresh halaman.');
+                return;
+            }
+            const btn = e.target.querySelector('button[type="submit"]');
+            const btnHtml = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1"></i> Mengirim...';
+            const row = { nama, hadir, pesan };
+            if (window.__EVENT_ID__) row.event_id = window.__EVENT_ID__;
+            const { error } = await supabaseClient.from('ucapan').insert(row);
+            btn.disabled = false;
+            btn.innerHTML = btnHtml;
+            if (error) {
+                console.error('Gagal mengirim ucapan:', error);
+                alert('Gagal mengirim ucapan. Coba lagi ya.');
+                return;
+            }
+            list.insertAdjacentHTML('afterbegin', renderComment(nama, hadir, pesan));
             e.target.reset();
         }
+
+        loadUcapan();
 
         // 5. Fungsi Baca Nama Tamu dari Link URL (?to=Nama+Tamu)
         const urlParams = new URLSearchParams(window.location.search);
@@ -639,9 +697,10 @@
             document.getElementById('guest-name').innerText = guest;
         }
 
-        // 6. Fungsi Hitung Mundur Waktu (Countdown ke 30 Oktober 2026)
-        const targetDate = new Date("Oct 30, 2026 08:00:00").getTime();
+        // 6. Hitung Mundur - ikut tanggal acara dinamis (default 30 Okt 2026)
+        let targetDate = new Date("Oct 30, 2026 08:00:00").getTime();
         setInterval(() => {
+            if (window.__WEDDING_DATE__) targetDate = window.__WEDDING_DATE__;
             const now = new Date().getTime();
             const diff = targetDate - now;
 

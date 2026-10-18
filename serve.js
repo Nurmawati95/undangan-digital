@@ -32,7 +32,10 @@ function send(res, code, body, type) {
 }
 
 const server = http.createServer((req, res) => {
-  let urlPath = decodeURIComponent(req.url.split('?')[0]);
+  const rawUrl = req.url || '/';
+  const qIndex = rawUrl.indexOf('?');
+  const rawQuery = qIndex >= 0 ? rawUrl.slice(qIndex + 1) : '';
+  let urlPath = decodeURIComponent((qIndex >= 0 ? rawUrl.slice(0, qIndex) : rawUrl) || '/');
 
   // Routing halaman utama
   if (urlPath === '/' || urlPath === '/index.html') {
@@ -44,6 +47,16 @@ const server = http.createServer((req, res) => {
   }
   if (urlPath === '/undangan-2') {
     urlPath = '/Desain/undangan_pernikahan_putra_putri_palet_warna_baru_2/code.html';
+  }
+  // Undangan dinamis per acara: /u/nama-slug
+  // Redirect ke /render.html?slug=... supaya query benar-benar terlihat
+  // oleh browser (window.location.search di render.html).
+  if (urlPath.startsWith('/u/')) {
+    const slug = decodeURIComponent(urlPath.slice(3)).split('/')[0].split('?')[0].trim();
+    if (slug) {
+      res.writeHead(302, { Location: '/render.html?slug=' + encodeURIComponent(slug) });
+      return res.end();
+    }
   }
 
   const filePath = path.normalize(path.join(ROOT, urlPath));

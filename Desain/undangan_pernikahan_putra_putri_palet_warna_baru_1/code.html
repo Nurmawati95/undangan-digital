@@ -11,8 +11,9 @@
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;0,700;1,600&amp;family=Great+Vibes&amp;family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
 <!-- FontAwesome untuk Ikon -->
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet"/>
-<!-- Supabase JS Client (untuk Ucapan & RSVP permanen) -->
+<!-- Supabase JS Client (untuk Ucapan & RSVP permanen + data acara dinamis) -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="/event-loader.js"></script>
 <style>
         :root {
             --color-blue: #2391FF;
@@ -402,12 +403,18 @@
         async function loadUcapan() {
             const list = document.getElementById('comment-list');
             if (!supabaseClient) return;
+            // Tunggu loader acara selesai agar tahu event_id (maks 5 detik)
+            for (let i = 0; i < 50 && window.__EVENT_ID__ === undefined; i++) {
+                await new Promise((r) => setTimeout(r, 100));
+            }
             list.innerHTML = '<p class="text-xs text-slate-400 text-center py-4">Memuat ucapan...</p>';
-            const { data, error } = await supabaseClient
+            let q = supabaseClient
                 .from('ucapan')
                 .select('nama,hadir,pesan')
                 .order('created_at', { ascending: false })
                 .limit(50);
+            if (window.__EVENT_ID__) q = q.eq('event_id', window.__EVENT_ID__);
+            const { data, error } = await q;
             if (error) {
                 console.error('Gagal memuat ucapan:', error);
                 list.innerHTML = '<p class="text-xs text-rose-500 text-center py-4">Gagal memuat ucapan. Coba refresh halaman.</p>';
@@ -438,7 +445,9 @@
             btn.disabled = true;
             btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1"></i> Mengirim...';
 
-            const { error } = await supabaseClient.from('ucapan').insert({ nama, hadir, pesan });
+            const row = { nama, hadir, pesan };
+            if (window.__EVENT_ID__) row.event_id = window.__EVENT_ID__;
+            const { error } = await supabaseClient.from('ucapan').insert(row);
             btn.disabled = false;
             btn.innerHTML = btnHtml;
 
@@ -461,9 +470,10 @@
             document.getElementById('guest-name').innerText = guest;
         }
 
-        // 6. Fungsi Hitung Mundur Waktu (Countdown ke 30 Oktober 2026)
-        const targetDate = new Date("Oct 30, 2026 08:00:00").getTime();
+        // 6. Hitung Mundur - ikut tanggal acara dinamis (default 30 Okt 2026)
+        let targetDate = new Date("Oct 30, 2026 08:00:00").getTime();
         setInterval(() => {
+            if (window.__WEDDING_DATE__) targetDate = window.__WEDDING_DATE__;
             const now = new Date().getTime();
             const diff = targetDate - now;
 

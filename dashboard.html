@@ -30,18 +30,35 @@
 </div>
 </nav>
 <main class="max-w-3xl mx-auto p-5 space-y-5 pb-16">
+<!-- DAFTAR ACARA -->
+<div class="bg-white rounded-2xl p-5 shadow-sm">
+<div class="flex items-center justify-between mb-3">
+<h2 class="font-bold text-sm"><i class="fa-solid fa-calendar-check text-[#F70063] mr-1"></i> Acara Saya</h2>
+<button onclick="bukaFormTambah()" class="text-xs bg-[#F70063] hover:bg-[#d60055] text-white font-semibold px-4 py-2.5 rounded-xl transition"><i class="fa-solid fa-plus mr-1"></i> Tambah Acara</button>
+</div>
+<div id="acara-list" class="space-y-3"></div>
+</div>
+<!-- STATISTIK UCAPAN -->
+<div class="bg-white rounded-2xl p-5 shadow-sm">
+<div class="flex items-center justify-between mb-3">
+<h2 class="font-bold text-sm"><i class="fa-solid fa-chart-simple text-[#2391FF] mr-1"></i> Statistik Ucapan</h2>
+<select id="filter-acara" onchange="muatUcapan()" class="text-xs p-2 rounded-xl border border-slate-300 focus:outline-none focus:border-[#2391FF]">
+<option value="">Semua acara</option>
+</select>
+</div>
 <div class="grid grid-cols-3 gap-3">
-<div class="bg-white rounded-2xl p-4 shadow-sm text-center">
+<div class="bg-slate-50 rounded-2xl p-4 text-center border border-slate-100">
 <p id="stat-total" class="text-2xl font-extrabold text-[#2391FF]">0</p>
 <p class="text-[11px] text-slate-500">Total Ucapan</p>
 </div>
-<div class="bg-white rounded-2xl p-4 shadow-sm text-center">
+<div class="bg-slate-50 rounded-2xl p-4 text-center border border-slate-100">
 <p id="stat-hadir" class="text-2xl font-extrabold text-emerald-600">0</p>
 <p class="text-[11px] text-slate-500">Hadir</p>
 </div>
-<div class="bg-white rounded-2xl p-4 shadow-sm text-center">
+<div class="bg-slate-50 rounded-2xl p-4 text-center border border-slate-100">
 <p id="stat-tidak" class="text-2xl font-extrabold text-rose-500">0</p>
 <p class="text-[11px] text-slate-500">Berhalangan</p>
+</div>
 </div>
 </div>
 <div id="admin-panel" class="hidden bg-white rounded-2xl p-5 shadow-sm border-t-4 border-t-[#FFCD54]">
@@ -62,17 +79,57 @@
 </div>
 </main>
 </div>
+<!-- MODAL TAMBAH ACARA -->
+<div id="modal-tambah" class="hidden fixed inset-0 z-50 bg-slate-950/60 flex items-center justify-center p-4">
+<div class="bg-white rounded-3xl w-full max-w-md p-6 shadow-2xl">
+<h2 class="font-bold text-base mb-1"><i class="fa-solid fa-plus text-[#F70063] mr-1"></i> Tambah Acara Baru</h2>
+<p class="text-[11px] text-slate-500 mb-4">Isi info dasar dulu, detail lengkap bisa diedit setelahnya.</p>
+<div class="space-y-3">
+<div>
+<label class="text-xs font-semibold text-slate-700 block mb-1">Judul Acara</label>
+<input id="t-judul" placeholder="Pernikahan Putra & Putri" class="w-full text-sm p-3 rounded-xl border border-slate-300 focus:outline-none focus:border-[#F70063]"/>
+</div>
+<div>
+<label class="text-xs font-semibold text-slate-700 block mb-1">Slug (link undangan)</label>
+<div class="flex items-center gap-1">
+<span class="text-xs text-slate-400">/u/</span>
+<input id="t-slug" placeholder="putra-putri" class="flex-1 text-sm p-3 rounded-xl border border-slate-300 focus:outline-none focus:border-[#F70063]"/>
+</div>
+<p class="text-[10px] text-slate-400 mt-1">Huruf kecil, angka, strip saja. Contoh: putra-putri</p>
+</div>
+<div>
+<label class="text-xs font-semibold text-slate-700 block mb-1">Template</label>
+<select id="t-template" class="w-full text-sm p-3 rounded-xl border border-slate-300 focus:outline-none focus:border-[#F70063]">
+<option value="palet-1">Palet Warna Baru 1</option>
+<option value="palet-2">Palet Warna Baru 2</option>
+</select>
+</div>
+<div>
+<label class="text-xs font-semibold text-slate-700 block mb-1">Tanggal Utama</label>
+<input id="t-tanggal" type="date" class="w-full text-sm p-3 rounded-xl border border-slate-300 focus:outline-none focus:border-[#F70063]"/>
+</div>
+</div>
+<p id="t-msg" class="text-[11px] mt-3"></p>
+<div class="flex gap-2 mt-4">
+<button onclick="tutupModalTambah()" class="flex-1 text-xs font-semibold bg-slate-100 hover:bg-slate-200 py-3 rounded-xl transition">Batal</button>
+<button onclick="simpanAcaraBaru()" class="flex-1 text-xs font-semibold bg-[#F70063] hover:bg-[#d60055] text-white py-3 rounded-xl transition">Simpan Acara</button>
+</div>
+</div>
+</div>
 <script>
 const SUPABASE_URL = 'https://nrotipuxmfbiqvzolzox.supabase.co';
 const SUPABASE_ANON_KEY = 'sb_publishable_aWyIwLYXvHDgHbTYKDnVjA_54uijLKx';
 const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 let myRole = 'pelanggan';
+let myId = null;
+let daftarAcara = [];
 function esc(s) {
 return String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 }
 async function init() {
 const { data: { session } } = await sb.auth.getSession();
 if (!session) { window.location.href = '/login.html'; return; }
+myId = session.user.id;
 document.getElementById('user-email').textContent = session.user.email || '-';
 const { data: profile } = await sb.from('profiles').select('role').eq('id', session.user.id).single();
 myRole = profile?.role || 'pelanggan';
@@ -87,13 +144,60 @@ badge.className = 'text-[10px] font-bold px-2.5 py-1 rounded-full bg-[#2391FF]';
 }
 document.getElementById('loading').classList.add('hidden');
 document.getElementById('app').classList.remove('hidden');
+await muatAcara();
 muatUcapan();
+}
+// ===== ACARA =====
+async function muatAcara() {
+const box = document.getElementById('acara-list');
+box.innerHTML = '<p class="text-xs text-slate-400 text-center py-6">Memuat acara...</p>';
+const { data, error } = await sb.from('events').select('id,judul,slug,template,foto_cover,tanggal_utama,status').order('created_at', { ascending: false });
+if (error) { box.innerHTML = '<p class="text-xs text-rose-500 text-center py-6">Gagal: ' + esc(error.message) + '</p>'; return; }
+daftarAcara = data || [];
+const filter = document.getElementById('filter-acara');
+filter.innerHTML = '<option value="">Semua acara</option>' + daftarAcara.map((a) => `<option value="${a.id}">${esc(a.judul)} (/u/${esc(a.slug)})</option>`).join('');
+if (!daftarAcara.length) { box.innerHTML = '<p class="text-xs text-slate-400 text-center py-6">Belum ada acara. Klik <b>Tambah Acara</b> untuk membuat undangan pertama.</p>'; return; }
+box.innerHTML = daftarAcara.map((a) => {
+const img = a.foto_cover ? `<img src="${esc(a.foto_cover)}" class="w-16 h-16 rounded-xl object-cover bg-slate-200"/>` : `<div class="w-16 h-16 rounded-xl bg-gradient-to-br from-[#2391FF] to-[#0b1a30] flex items-center justify-center text-white font-bold">U</div>`;
+const st = a.status === 'publish' ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-200 text-slate-600';
+const tgl = a.tanggal_utama ? new Date(a.tanggal_utama).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' }) : '-';
+return `<div class="flex gap-3 items-center bg-slate-50 border border-slate-100 rounded-2xl p-3">${img}<div class="flex-1 min-w-0"><p class="font-bold text-sm truncate">${esc(a.judul)}</p><p class="text-[11px] text-slate-500">/u/${esc(a.slug)} • ${tgl}</p><span class="inline-block mt-1 text-[10px] font-bold px-2 py-0.5 rounded-full ${st}">${esc(a.status)}</span></div><div class="flex flex-col gap-1.5 shrink-0"><a href="/u/${esc(a.slug)}" target="_blank" class="text-[11px] font-semibold text-[#2391FF] hover:underline text-right"><i class="fa-solid fa-eye mr-1"></i>Lihat</a><a href="/edit-acara.html?id=${a.id}" class="text-[11px] font-semibold text-white bg-[#2391FF] hover:bg-[#1875d6] px-3 py-1.5 rounded-lg text-center"><i class="fa-solid fa-pen mr-1"></i>Edit Form</a><button onclick="hapusAcara(${a.id})" class="text-[11px] font-semibold text-rose-500 hover:text-rose-700">Hapus</button></div></div>`;
+}).join('');
+}
+function bukaFormTambah() {
+document.getElementById('t-msg').textContent = '';
+document.getElementById('modal-tambah').classList.remove('hidden');
+}
+function tutupModalTambah() {
+document.getElementById('modal-tambah').classList.add('hidden');
+}
+async function simpanAcaraBaru() {
+const msg = document.getElementById('t-msg');
+const judul = document.getElementById('t-judul').value.trim() || 'Undangan Baru';
+let slug = document.getElementById('t-slug').value.trim().toLowerCase().replace(/[^a-z0-9-]/g, '-').replace(/-+/g, '-');
+if (!slug) { msg.textContent = 'Slug wajib diisi.'; msg.className = 'text-[11px] mt-3 text-rose-500'; return; }
+const template = document.getElementById('t-template').value;
+const tanggal = document.getElementById('t-tanggal').value || null;
+msg.textContent = 'Menyimpan...'; msg.className = 'text-[11px] mt-3 text-sky-600';
+const { data, error } = await sb.from('events').insert({ owner_id: myId, slug, judul, template, tanggal_utama: tanggal }).select('id').single();
+if (error) { msg.textContent = 'Gagal: ' + error.message; msg.className = 'text-[11px] mt-3 text-rose-500'; return; }
+tutupModalTambah();
+window.location.href = '/edit-acara.html?id=' + data.id;
+}
+async function hapusAcara(id) {
+if (!confirm('Hapus acara ini beserta semua ucapannya?')) return;
+const { error } = await sb.from('events').delete().eq('id', id);
+if (error) { alert('Gagal: ' + error.message); return; }
+muatAcara();
 }
 
 async function muatUcapan() {
 const list = document.getElementById('list');
+const evFilter = document.getElementById('filter-acara') ? document.getElementById('filter-acara').value : '';
 list.innerHTML = '<p class="text-xs text-slate-400 text-center py-6">Memuat...</p>';
-const { data, error } = await sb.from('ucapan').select('id,nama,hadir,pesan,created_at').order('created_at', { ascending: false }).limit(200);
+let q = sb.from('ucapan').select('id,event_id,nama,hadir,pesan,created_at').order('created_at', { ascending: false }).limit(200);
+if (evFilter) q = q.eq('event_id', parseInt(evFilter, 10));
+const { data, error } = await q;
 if (error) { list.innerHTML = '<p class="text-xs text-rose-500 text-center py-6">Gagal: ' + esc(error.message) + '</p>'; return; }
 if (!data || !data.length) { list.innerHTML = '<p class="text-xs text-slate-400 text-center py-6">Belum ada ucapan.</p>'; return; }
 document.getElementById('stat-total').textContent = data.length;
