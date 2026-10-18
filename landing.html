@@ -6,6 +6,7 @@
 <title>UNDIGITAL - Buat Undangan Digital Cantik</title>
 <link href="favicon.svg" rel="icon" type="image/svg+xml"/>
 <script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet"/>
 <style>
@@ -37,11 +38,11 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; }
 </header>
 <section class="max-w-5xl mx-auto px-5 pb-14">
 <h2 class="text-center font-bold text-lg mb-1">Lihat Contoh Undangan</h2>
-<p class="text-center text-xs text-slate-400 mb-6">Klik untuk membuka demo undangan</p>
+<p class="text-center text-xs text-slate-400 mb-6">Menampilkan acara terakhir yang sudah dipublish</p>
 <div class="grid sm:grid-cols-2 gap-4">
-<a href="/undangan-1" class="bg-white text-slate-800 rounded-3xl overflow-hidden shadow-xl hover:scale-[1.02] transition block">
-<div class="h-44 bg-gradient-to-br from-[#2391FF] via-[#1b71cb] to-[#0b1a30] flex items-center justify-center">
-<span class="font-esthetic text-4xl text-white">Putra &amp; Putri</span>
+<a href="/undangan-1" data-demo-card data-template="palet-1" class="bg-white text-slate-800 rounded-3xl overflow-hidden shadow-xl hover:scale-[1.02] transition block">
+<div data-demo-cover class="h-44 bg-gradient-to-br from-[#2391FF] via-[#1b71cb] to-[#0b1a30] flex items-center justify-center bg-cover bg-center">
+<span data-demo-nama class="font-esthetic text-4xl text-white drop-shadow">Putra &amp; Putri</span>
 </div>
 <div class="p-5">
 <p class="text-[11px] font-bold text-[#2391FF] uppercase tracking-widest mb-1">Palet Warna Baru 1</p>
@@ -49,9 +50,9 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; }
 <span class="inline-flex items-center gap-1.5 text-xs font-semibold text-[#F70063]">Buka Demo <i class="fa-solid fa-arrow-right"></i></span>
 </div>
 </a>
-<a href="/undangan-2" class="bg-white text-slate-800 rounded-3xl overflow-hidden shadow-xl hover:scale-[1.02] transition block">
-<div class="h-44 bg-gradient-to-br from-[#F70063] via-[#a30043] to-[#0b1a30] flex items-center justify-center">
-<span class="font-esthetic text-4xl text-white">Putra &amp; Putri</span>
+<a href="/undangan-2" data-demo-card data-template="palet-2" class="bg-white text-slate-800 rounded-3xl overflow-hidden shadow-xl hover:scale-[1.02] transition block">
+<div data-demo-cover class="h-44 bg-gradient-to-br from-[#F70063] via-[#a30043] to-[#0b1a30] flex items-center justify-center bg-cover bg-center">
+<span data-demo-nama class="font-esthetic text-4xl text-white drop-shadow">Putra &amp; Putri</span>
 </div>
 <div class="p-5">
 <p class="text-[11px] font-bold text-[#F70063] uppercase tracking-widest mb-1">Palet Warna Baru 2</p>
@@ -64,5 +65,56 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; }
 <footer class="border-t border-white/10 py-6 text-center text-[11px] text-slate-400">
 <p>Made with <span class="text-[#F70063]">❤️</span> by <b class="text-[#FFF83F] tracking-wider">UNDIGITAL</b></p>
 </footer>
+<script>
+// Kartu "Lihat Contoh Undangan" mengikuti acara terakhir yang sudah dipublish,
+// per template. Jika template belum punya acara publish, kartu tetap demo statis.
+(function () {
+var SUPABASE_URL = 'https://nrotipuxmfbiqvzolzox.supabase.co';
+var SUPABASE_ANON_KEY = 'sb_publishable_aWyIwLYXvHDgHbTYKDnVjA_54uijLKx';
+if (!window.supabase) return;
+var sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+// Konversi link Google Drive -> gambar langsung (konsisten dengan event-loader.js)
+function toDirectImg(u) {
+if (!u) return u;
+u = String(u).trim();
+if (/drive\.google\.com/.test(u)) {
+var m = u.match(/\/file\/d\/([A-Za-z0-9_-]+)/) || u.match(/[?&]id=([A-Za-z0-9_-]+)/);
+if (m) return 'https://lh3.googleusercontent.com/d/' + m[1] + '=s1600';
+return u;
+}
+var m2 = u.match(/^https:\/\/lh3\.googleusercontent\.com\/d\/([A-Za-z0-9_-]+)(?:=s\d+)?$/);
+if (m2) return 'https://lh3.googleusercontent.com/d/' + m2[1] + '=s1600';
+return u;
+}
+sb.from('events')
+.select('slug, template, foto_cover, foto_hero, mempelai_pria, mempelai_wanita, created_at')
+.eq('status', 'publish')
+.order('created_at', { ascending: false })
+.then(function (res) {
+var rows = res.data || [];
+document.querySelectorAll('[data-demo-card]').forEach(function (card) {
+var tpl = card.getAttribute('data-template');
+var ev = null;
+for (var i = 0; i < rows.length; i++) {
+if ((rows[i].template || 'palet-1') === tpl) { ev = rows[i]; break; }
+}
+if (!ev) return; // belum ada acara publish untuk template ini -> tampilan statis
+var P = ev.mempelai_pria || {}, W = ev.mempelai_wanita || {};
+var nama = [P.panggilan, W.panggilan].filter(Boolean).join(' & ');
+var cover = toDirectImg(ev.foto_cover || ev.foto_hero);
+var box = card.querySelector('[data-demo-cover]');
+if (cover && box) {
+// Gradient + foto agar teks tetap terbaca di atas foto
+box.style.backgroundImage = "linear-gradient(to bottom, rgba(11,26,48,0.25), rgba(11,26,48,0.55)), url('" + cover + "')";
+}
+if (nama && box) {
+var span = box.querySelector('[data-demo-nama]');
+if (span) span.textContent = nama;
+}
+card.setAttribute('href', '/u/' + encodeURIComponent(ev.slug));
+});
+});
+})();
+</script>
 </body>
 </html>
