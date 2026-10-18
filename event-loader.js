@@ -14,10 +14,28 @@ document.querySelectorAll(sel).forEach(function (el) { el.textContent = v; });
 }
 function img(sel, v) {
 if (!v) return;
+v = toDirectImg(v);
 document.querySelectorAll(sel).forEach(function (el) { el.src = v; });
+}
+// Konversi link share Google Drive -> URL gambar langsung (lh3).
+// Link share Drive (…/file/d/ID/view) adalah halaman HTML, bukan gambar.
+// Suffix =s1600 memaksa URL baru sehingga browser mengambil gambar segar
+// (menghindari cache lama "halaman izin" Google dari saat file masih private).
+function toDirectImg(u) {
+if (!u) return u;
+u = String(u).trim();
+if (/drive\.google\.com/.test(u)) {
+var m = u.match(/\/file\/d\/([A-Za-z0-9_-]+)/) || u.match(/[?&]id=([A-Za-z0-9_-]+)/);
+if (m) return 'https://lh3.googleusercontent.com/d/' + m[1] + '=s1600';
+return u;
+}
+var m2 = u.match(/^https:\/\/lh3\.googleusercontent\.com\/d\/([A-Za-z0-9_-]+)(?:=s\d+)?$/);
+if (m2) return 'https://lh3.googleusercontent.com/d/' + m2[1] + '=s1600';
+return u;
 }
 function bg(sel, v) {
 if (!v) return;
+v = toDirectImg(v);
 document.querySelectorAll(sel).forEach(function (el) {
 var old = el.getAttribute('style') || '';
 var grad = old.match(/linear-gradient\([^)]+\)/) || 'linear-gradient(to bottom, rgba(11,26,48,0.55), rgba(11,26,48,0.92))';
@@ -75,10 +93,18 @@ var ps = document.querySelectorAll('#mempelai .text-slate-500');
 if (ps[0]) ps[0].textContent = P.ortu;
 if (W.ortu && ps[1]) ps[1].textContent = W.ortu;
 }
-if (P.foto) {
+if (P.foto || W.foto) {
 var im = document.querySelectorAll('#mempelai img');
-if (im[0]) im[0].src = P.foto;
-if (W.foto && im[1]) im[1].src = W.foto;
+if (im[0]) {
+im[0].dataset.defaultSrc = im[0].src;
+im[0].onerror = function () { if (this.dataset.defaultSrc) this.src = this.dataset.defaultSrc; };
+if (P.foto) im[0].src = toDirectImg(P.foto);
+}
+if (im[1]) {
+im[1].dataset.defaultSrc = im[1].src;
+im[1].onerror = function () { if (this.dataset.defaultSrc) this.src = this.dataset.defaultSrc; };
+if (W.foto) im[1].src = toDirectImg(W.foto);
+}
 }
 if (P.ig) {
 var igs = document.querySelectorAll('#mempelai a[href*="instagram"]');
@@ -112,7 +138,7 @@ if (A2.maps) { var m2 = c2.querySelector('a[href*="maps"]'); if (m2) m2.href = A
 }
 if (d.galeri && d.galeri.length) {
 var g = document.querySelectorAll('#galeri .grid img');
-d.galeri.slice(0, g.length).forEach(function (url, i) { g[i].src = url; });
+d.galeri.slice(0, g.length).forEach(function (url, i) { g[i].src = toDirectImg(url); });
 }
 if (K.c1j || K.c1i || K.c2j || K.c2i) {
 var st = document.querySelectorAll('#galeri .space-y-6 h4, #galeri .space-y-6 > div h4');

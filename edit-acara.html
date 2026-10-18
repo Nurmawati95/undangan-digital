@@ -53,8 +53,8 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; }
 <div><label class="lbl">Tanggal Utama</label><input id="f-tanggal" type="date" class="fld"/></div>
 <div><label class="lbl">Status</label><select id="f-status" class="fld"><option value="draft">Draft</option><option value="publish">Publish</option></select></div>
 </div>
-<div><label class="lbl">URL Foto Cover</label><input id="f-foto_cover" class="fld" placeholder="https://..."/></div>
-<div><label class="lbl">URL Foto Hero</label><input id="f-foto_hero" class="fld" placeholder="https://..."/></div>
+<div><label class="lbl">URL Foto Cover <span class="text-slate-400 font-normal">(Google Drive juga boleh)</span></label><input id="f-foto_cover" class="fld" placeholder="https://..."/></div>
+<div><label class="lbl">URL Foto Hero <span class="text-slate-400 font-normal">(Google Drive juga boleh)</span></label><input id="f-foto_hero" class="fld" placeholder="https://..."/></div>
 </div>
 </div>
 <div class="sect" data-sect="pria">
@@ -114,7 +114,7 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; }
 
 <div class="sect" data-sect="galeri">
 <h2 class="font-bold text-sm mb-1">GALERY FOTO</h2>
-<p class="text-[11px] text-slate-500 mb-3">Satu URL per baris, maksimal 8 foto.</p>
+<p class="text-[11px] text-slate-500 mb-3">Satu URL per baris, maksimal 8 foto. Link Google Drive juga boleh — pastikan file di-set "Siapa saja yang memiliki link".</p>
 <textarea id="f-galeri" rows="6" class="fld" placeholder="https://...foto1"></textarea>
 </div>
 <div class="sect" data-sect="kata">
@@ -158,6 +158,20 @@ const SECTS = [['dasar','INFO DASAR'],['pria','PRIA'],['wanita','WANITA'],['acar
 let evId = null;
 function val(id){ return document.getElementById(id).value || ''; }
 function setVal(id, v){ document.getElementById(id).value = v ?? ''; }
+// Ubah link Google Drive menjadi URL gambar langsung (lh3).
+// Contoh: drive.google.com/file/d/ABC123/view -> https://lh3.googleusercontent.com/d/ABC123=s1600
+// Tanpa konversi ini, <img src> tidak bisa menampilkan foto dari link share Drive.
+// Suffix =s1600 juga memaksa browser mengambil gambar segar (bypass cache lama).
+function toDirectImg(u){
+if(!u) return '';
+u = String(u).trim();
+if(/drive\.google\.com/.test(u)){
+const m = u.match(/\/file\/d\/([A-Za-z0-9_-]+)/) || u.match(/[?&]id=([A-Za-z0-9_-]+)/);
+return m ? 'https://lh3.googleusercontent.com/d/' + m[1] + '=s1600' : u;
+}
+const m2 = u.match(/^https:\/\/lh3\.googleusercontent\.com\/d\/([A-Za-z0-9_-]+)(?:=s\d+)?$/);
+return m2 ? 'https://lh3.googleusercontent.com/d/' + m2[1] + '=s1600' : u;
+}
 function showSect(k){
 document.querySelectorAll('.sect').forEach(s => s.classList.toggle('active', s.dataset.sect === k));
 document.querySelectorAll('.tabbtn').forEach(b => b.classList.toggle('active', b.dataset.k === k));
@@ -189,7 +203,7 @@ const WA = d.wa || {};
 setVal('f-wa-nomor', WA.nomor); setVal('f-wa-teks', WA.teks); setVal('f-wa-pesan', WA.pesan);
 const L = d.lainnya || {};
 setVal('f-lain-rek1', L.rek1); setVal('f-lain-rek2', L.rek2); setVal('f-lain-musik', L.musik); setVal('f-lain-tamu', L.tamu);
-document.getElementById('prev-img').src = d.foto_cover || d.foto_hero || '';
+document.getElementById('prev-img').src = toDirectImg(d.foto_cover) || toDirectImg(d.foto_hero) || '';
 document.getElementById('prev-slug').textContent = 'Link: /u/' + d.slug;
 document.getElementById('prev-link').href = '/u/' + d.slug;
 document.getElementById('loading').classList.add('hidden');
@@ -204,12 +218,12 @@ msg.textContent = 'Menyimpan...'; msg.className = 'text-xs mb-3 text-sky-600';
 const payload = {
 judul: val('f-judul'), slug: val('f-slug').toLowerCase().trim(), template: val('f-template'),
 tanggal_utama: val('f-tanggal') || null, status: val('f-status'),
-foto_cover: val('f-foto_cover'), foto_hero: val('f-foto_hero'),
-mempelai_pria: { nama: val('f-pria-nama'), panggilan: val('f-pria-panggilan'), ortu: val('f-pria-ortu'), ig: val('f-pria-ig'), foto: val('f-pria-foto') },
-mempelai_wanita: { nama: val('f-wanita-nama'), panggilan: val('f-wanita-panggilan'), ortu: val('f-wanita-ortu'), ig: val('f-wanita-ig'), foto: val('f-wanita-foto') },
+foto_cover: toDirectImg(val('f-foto_cover')), foto_hero: toDirectImg(val('f-foto_hero')),
+mempelai_pria: { nama: val('f-pria-nama'), panggilan: val('f-pria-panggilan'), ortu: val('f-pria-ortu'), ig: val('f-pria-ig'), foto: toDirectImg(val('f-pria-foto')) },
+mempelai_wanita: { nama: val('f-wanita-nama'), panggilan: val('f-wanita-panggilan'), ortu: val('f-wanita-ortu'), ig: val('f-wanita-ig'), foto: toDirectImg(val('f-wanita-foto')) },
 acara1: { nama: val('f-a1-nama'), tanggal: val('f-a1-tanggal'), jam: val('f-a1-jam'), tempat: val('f-a1-tempat'), alamat: val('f-a1-alamat'), maps: val('f-a1-maps') },
 acara2: { nama: val('f-a2-nama'), tanggal: val('f-a2-tanggal'), jam: val('f-a2-jam'), tempat: val('f-a2-tempat'), alamat: val('f-a2-alamat'), maps: val('f-a2-maps') },
-galeri: val('f-galeri').split('\n').map(s => s.trim()).filter(Boolean).slice(0, 8),
+galeri: val('f-galeri').split('\n').map(s => toDirectImg(s)).filter(Boolean).slice(0, 8),
 kata: { quote: val('f-kata-quote'), sumber: val('f-kata-sumber'), c1j: val('f-kata-c1j'), c1i: val('f-kata-c1i'), c2j: val('f-kata-c2j'), c2i: val('f-kata-c2i'), tutup: val('f-kata-tutup') },
 wa: { nomor: val('f-wa-nomor'), teks: val('f-wa-teks'), pesan: val('f-wa-pesan') },
 lainnya: { rek1: val('f-lain-rek1'), rek2: val('f-lain-rek2'), musik: val('f-lain-musik'), tamu: val('f-lain-tamu') },
