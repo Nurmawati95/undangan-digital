@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html class="scroll-smooth" lang="id">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Dashboard - UNDIGITAL</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet"/>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>body { font-family: 'Plus Jakarta Sans', sans-serif; }</style>
+</head>
+<body class="bg-slate-100 min-h-screen">
+<div id="loading" class="min-h-screen flex flex-col items-center justify-center gap-3 text-slate-500">
+<i class="fa-solid fa-circle-notch fa-spin text-3xl text-[#F70063]"></i>
+<p class="text-sm">Memeriksa sesi login...</p>
+</div>
+<div id="app" class="hidden">
+<nav class="bg-[#0b1a30] text-white px-5 py-4 flex items-center justify-between sticky top-0 z-20 shadow">
+<div class="flex items-center gap-2">
+<span class="w-9 h-9 rounded-xl bg-[#F70063] flex items-center justify-center font-bold">U</span>
+<div>
+<p class="font-bold text-sm leading-tight">UNDIGITAL Dashboard</p>
+<p id="user-email" class="text-[11px] text-slate-300 leading-tight">-</p>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<span id="role-badge" class="text-[10px] font-bold px-2.5 py-1 rounded-full bg-slate-700">-</span>
+<button onclick="logout()" class="text-xs bg-white/10 hover:bg-[#F70063] px-3.5 py-2 rounded-xl transition"><i class="fa-solid fa-right-from-bracket mr-1"></i> Keluar</button>
+</div>
+</nav>
+<main class="max-w-3xl mx-auto p-5 space-y-5 pb-16">
+<div class="grid grid-cols-3 gap-3">
+<div class="bg-white rounded-2xl p-4 shadow-sm text-center">
+<p id="stat-total" class="text-2xl font-extrabold text-[#2391FF]">0</p>
+<p class="text-[11px] text-slate-500">Total Ucapan</p>
+</div>
+<div class="bg-white rounded-2xl p-4 shadow-sm text-center">
+<p id="stat-hadir" class="text-2xl font-extrabold text-emerald-600">0</p>
+<p class="text-[11px] text-slate-500">Hadir</p>
+</div>
+<div class="bg-white rounded-2xl p-4 shadow-sm text-center">
+<p id="stat-tidak" class="text-2xl font-extrabold text-rose-500">0</p>
+<p class="text-[11px] text-slate-500">Berhalangan</p>
+</div>
+</div>
+<div id="admin-panel" class="hidden bg-white rounded-2xl p-5 shadow-sm border-t-4 border-t-[#FFCD54]">
+<h2 class="font-bold text-sm mb-1"><i class="fa-solid fa-user-shield text-[#F70063] mr-1"></i> Kelola Admin</h2>
+<p class="text-[11px] text-slate-500 mb-3">Hanya admin. Masukkan email pengguna yang sudah pernah login.</p>
+<div class="flex gap-2">
+<input id="admin-email" type="email" placeholder="email@contoh.com" class="flex-1 text-xs p-3 rounded-xl border border-slate-300 focus:outline-none focus:border-[#2391FF]"/>
+<button onclick="jadikanAdmin()" class="text-xs bg-[#2391FF] hover:bg-[#1875d6] text-white font-semibold px-4 py-3 rounded-xl transition">Jadikan Admin</button>
+</div>
+<p id="admin-msg" class="text-[11px] mt-2"></p>
+</div>
+<div class="bg-white rounded-2xl p-5 shadow-sm">
+<div class="flex items-center justify-between mb-3">
+<h2 class="font-bold text-sm"><i class="fa-solid fa-comments text-[#2391FF] mr-1"></i> Ucapan Masuk</h2>
+<button onclick="muatUcapan()" class="text-[11px] text-[#2391FF] font-semibold hover:underline"><i class="fa-solid fa-rotate-right mr-1"></i> Muat ulang</button>
+</div>
+<div id="list" class="space-y-3"></div>
+</div>
+</main>
+</div>
+<script>
+const SUPABASE_URL = 'https://nrotipuxmfbiqvzolzox.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_aWyIwLYXvHDgHbTYKDnVjA_54uijLKx';
+const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+let myRole = 'pelanggan';
+function esc(s) {
+return String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+}
+async function init() {
+const { data: { session } } = await sb.auth.getSession();
+if (!session) { window.location.href = '/login.html'; return; }
+document.getElementById('user-email').textContent = session.user.email || '-';
+const { data: profile } = await sb.from('profiles').select('role').eq('id', session.user.id).single();
+myRole = profile?.role || 'pelanggan';
+const badge = document.getElementById('role-badge');
+if (myRole === 'admin') {
+badge.textContent = 'ADMIN';
+badge.className = 'text-[10px] font-bold px-2.5 py-1 rounded-full bg-[#F70063]';
+document.getElementById('admin-panel').classList.remove('hidden');
+} else {
+badge.textContent = 'PELANGGAN';
+badge.className = 'text-[10px] font-bold px-2.5 py-1 rounded-full bg-[#2391FF]';
+}
+document.getElementById('loading').classList.add('hidden');
+document.getElementById('app').classList.remove('hidden');
+muatUcapan();
+}
+
+async function muatUcapan() {
+const list = document.getElementById('list');
+list.innerHTML = '<p class="text-xs text-slate-400 text-center py-6">Memuat...</p>';
+const { data, error } = await sb.from('ucapan').select('id,nama,hadir,pesan,created_at').order('created_at', { ascending: false }).limit(200);
+if (error) { list.innerHTML = '<p class="text-xs text-rose-500 text-center py-6">Gagal: ' + esc(error.message) + '</p>'; return; }
+if (!data || !data.length) { list.innerHTML = '<p class="text-xs text-slate-400 text-center py-6">Belum ada ucapan.</p>'; return; }
+document.getElementById('stat-total').textContent = data.length;
+document.getElementById('stat-hadir').textContent = data.filter((u) => u.hadir === 'Hadir').length;
+document.getElementById('stat-tidak').textContent = data.filter((u) => u.hadir !== 'Hadir').length;
+list.innerHTML = data.map((u) => {
+const badge = u.hadir === 'Hadir' ? 'bg-emerald-100 text-emerald-700' : 'bg-rose-100 text-rose-700';
+const tgl = new Date(u.created_at).toLocaleString('id-ID', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
+const del = myRole === 'admin' ? `<button onclick="hapusUcapan(${u.id})" class="text-[11px] text-rose-500 font-semibold"><i class="fa-solid fa-trash mr-1"></i>Hapus</button>` : '';
+return `<div class="bg-slate-50 p-3.5 rounded-xl border border-slate-100"><div class="flex justify-between items-center mb-1"><span class="font-bold text-xs text-[#2391FF]">${esc(u.nama)}</span><span class="text-[10px] ${badge} px-2 py-0.5 rounded-full font-semibold">${esc(u.hadir)}</span></div><p class="text-xs text-slate-600">${esc(u.pesan)}</p><div class="flex justify-between items-center mt-2"><span class="text-[10px] text-slate-400">${tgl}</span>${del}</div></div>`;
+}).join('');
+}
+async function hapusUcapan(id) {
+if (!confirm('Hapus ucapan ini?')) return;
+const { error } = await sb.from('ucapan').delete().eq('id', id);
+if (error) { alert('Gagal: ' + error.message); return; }
+muatUcapan();
+}
+async function jadikanAdmin() {
+const email = document.getElementById('admin-email').value.trim();
+const msg = document.getElementById('admin-msg');
+if (!email) { msg.textContent = 'Isi email dulu.'; msg.className = 'text-[11px] mt-2 text-rose-500'; return; }
+const { data, error } = await sb.from('profiles').select('id').eq('email', email).single();
+if (error || !data) { msg.textContent = 'Email belum pernah login. Minta login via Google dulu.'; msg.className = 'text-[11px] mt-2 text-rose-500'; return; }
+const { error: e2 } = await sb.from('profiles').update({ role: 'admin' }).eq('id', data.id);
+if (e2) { msg.textContent = 'Gagal: ' + e2.message; msg.className = 'text-[11px] mt-2 text-rose-500'; return; }
+msg.textContent = email + ' sekarang admin.';
+msg.className = 'text-[11px] mt-2 text-emerald-600';
+document.getElementById('admin-email').value = '';
+}
+async function logout() {
+await sb.auth.signOut();
+window.location.href = '/login.html';
+}
+init();
+</script>
+</body>
+</html>
+

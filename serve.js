@@ -1,0 +1,72 @@
+// Server localhost sederhana TANPA dependensi (pakai modul bawaan Node.js).
+// Cara pakai: node serve.js [port]
+// Contoh : node serve.js 8080
+const http = require('http');
+const fs = require('fs');
+const path = require('path');
+
+const PORT = parseInt(process.argv[2], 10) || 8080;
+const ROOT = __dirname;
+
+const MIME = {
+  '.html': 'text/html; charset=utf-8',
+  '.css': 'text/css; charset=utf-8',
+  '.js': 'text/javascript; charset=utf-8',
+  '.json': 'application/json; charset=utf-8',
+  '.png': 'image/png',
+  '.jpg': 'image/jpeg',
+  '.jpeg': 'image/jpeg',
+  '.gif': 'image/gif',
+  '.svg': 'image/svg+xml',
+  '.webp': 'image/webp',
+  '.ico': 'image/x-icon',
+  '.woff': 'font/woff',
+  '.woff2': 'font/woff2',
+  '.ttf': 'font/ttf',
+  '.mp3': 'audio/mpeg',
+};
+
+function send(res, code, body, type) {
+  res.writeHead(code, { 'Content-Type': type || 'text/plain; charset=utf-8' });
+  res.end(body);
+}
+
+const server = http.createServer((req, res) => {
+  let urlPath = decodeURIComponent(req.url.split('?')[0]);
+
+  // Routing halaman utama
+  if (urlPath === '/' || urlPath === '/index.html') {
+    urlPath = '/landing.html';
+  }
+  // Alias demo undangan agar URL rapi
+  if (urlPath === '/undangan-1') {
+    urlPath = '/Desain/undangan_pernikahan_putra_putri_palet_warna_baru_1/code.html';
+  }
+  if (urlPath === '/undangan-2') {
+    urlPath = '/Desain/undangan_pernikahan_putra_putri_palet_warna_baru_2/code.html';
+  }
+
+  const filePath = path.normalize(path.join(ROOT, urlPath));
+
+  // Cegah path traversal keluar dari folder project
+  if (!filePath.startsWith(ROOT)) {
+    return send(res, 403, 'Forbidden');
+  }
+
+  fs.stat(filePath, (err, stats) => {
+    if (err || !stats.isFile()) {
+      return send(res, 404, 'File tidak ditemukan: ' + urlPath);
+    }
+    const ext = path.extname(filePath).toLowerCase();
+    fs.readFile(filePath, (err2, data) => {
+      if (err2) return send(res, 500, 'Gagal membaca file');
+      send(res, 200, data, MIME[ext] || 'application/octet-stream');
+    });
+  });
+});
+
+server.listen(PORT, () => {
+  console.log('Undangan digital jalan di:');
+  console.log('  http://localhost:' + PORT);
+  console.log('Tekan Ctrl+C untuk berhenti.');
+});
