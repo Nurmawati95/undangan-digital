@@ -33,6 +33,20 @@ var m2 = u.match(/^https:\/\/lh3\.googleusercontent\.com\/d\/([A-Za-z0-9_-]+)(?:
 if (m2) return 'https://lh3.googleusercontent.com/d/' + m2[1] + '=s1600';
 return u;
 }
+// Konversi link Google Maps apa pun -> URL embed iframe (tanpa API key).
+// Contoh: .../maps/place/Nama/@-3.1,122.1,17z -> .../maps?q=-3.1,122.1&output=embed
+function toMapEmbed(u) {
+if (!u) return '';
+u = String(u).trim();
+if (/google\.com\/maps\/embed/.test(u)) return u;
+var mq = u.match(/[?&](?:q|query)=([^&]+)/);
+if (mq) return 'https://www.google.com/maps?q=' + mq[1] + '&output=embed';
+var mlat = u.match(/@(-?\d+\.?\d*),(-?\d+\.?\d*)/);
+if (mlat) return 'https://www.google.com/maps?q=' + mlat[1] + ',' + mlat[2] + '&output=embed';
+var mplace = u.match(/maps\/place\/([^/@]+)/);
+if (mplace) return 'https://www.google.com/maps?q=' + mplace[1].replace(/\+/g, '%20') + '&output=embed';
+return 'https://www.google.com/maps?q=' + encodeURIComponent(u) + '&output=embed';
+}
 function bg(sel, v) {
 if (!v) return;
 v = toDirectImg(v);
@@ -124,7 +138,7 @@ if (A1.jam) { var pj = c.querySelectorAll('.text-slate-500'); if (pj[0]) pj[0].t
 var inf = c.querySelectorAll('p.text-xs');
 if (A1.tempat && inf[1]) inf[1].textContent = A1.tempat;
 if (A1.alamat && inf[2]) inf[2].textContent = A1.alamat;
-if (A1.maps) { var m1 = c.querySelector('a[href*="maps"]'); if (m1) m1.href = A1.maps; }
+if (A1.maps) { var m1 = c.querySelector('a[href*="maps"]'); if (m1) m1.href = A1.maps; var f1 = c.querySelector('iframe.maps-embed'); if (f1) f1.src = toMapEmbed(A1.maps); }
 }
 if (cards[1] && (A2.nama || A2.tanggal || A2.jam || A2.tempat || A2.alamat)) {
 var c2 = cards[1];
@@ -134,7 +148,7 @@ if (A2.jam) { var pj2 = c2.querySelectorAll('.text-slate-500'); if (pj2[0]) pj2[
 var inf2 = c2.querySelectorAll('p.text-xs');
 if (A2.tempat && inf2[1]) inf2[1].textContent = A2.tempat;
 if (A2.alamat && inf2[2]) inf2[2].textContent = A2.alamat;
-if (A2.maps) { var m2 = c2.querySelector('a[href*="maps"]'); if (m2) m2.href = A2.maps; }
+if (A2.maps) { var m2 = c2.querySelector('a[href*="maps"]'); if (m2) m2.href = A2.maps; var f2 = c2.querySelector('iframe.maps-embed'); if (f2) f2.src = toMapEmbed(A2.maps); }
 }
 if (d.galeri && d.galeri.length) {
 var g = document.querySelectorAll('#galeri .grid img');
