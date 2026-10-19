@@ -43,10 +43,10 @@ const server = http.createServer((req, res) => {
   }
   // Alias demo undangan agar URL rapi
   if (urlPath === '/undangan-1') {
-    urlPath = '/Desain/undangan_pernikahan_putra_putri_palet_warna_baru_1/code.html';
+    urlPath = '/desain/code.html';
   }
   if (urlPath === '/undangan-2') {
-    urlPath = '/Desain/undangan_pernikahan_putra_putri_palet_warna_baru_2/code.html';
+    urlPath = '/desain/code.html';
   }
   // Undangan dinamis per acara: /u/nama-slug (?kpd=Nama+Tamu ikut utuh)
   // Sajikan render.html sebagai "rewrite" (URL asli tidak berubah),
