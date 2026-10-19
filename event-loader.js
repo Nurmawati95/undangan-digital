@@ -53,27 +53,8 @@ if (document.readyState === 'loading') {
 // Ubah spasi jadi "+" agar URL sesuai format ?kpd=Nama+Tamu
 function encKpd(s) { return encodeURIComponent(s).replace(/%20/g, '+'); }
 
-// ===== TOMBOL SHARE DI DEKAT "Buka Undangan" (jalan meski tidak ada slug) =====
-function pasangShareUI() {
-var s = _up.get('event') || '';
-var kpd = _kpd;
-var base = window.location.origin + '/render.html?slug=' + encodeURIComponent(s);
-var link = kpd ? base + '&kpd=' + encKpd(kpd) : base;
-var teks = kpd ? 'Assalamualaikum, saya undangan dari ' + kpd : 'Assalamualaikum, saya akan hadir.';
-var waUrl = 'https://wa.me/?text=' + encodeURIComponent(teks + ' ' + link);
-var btnCopy = document.getElementById('btn-copy-link');
-var btnWA = document.getElementById('btn-wa-share');
-if (btnCopy) {
-btnCopy.onclick = function () {
-navigator.clipboard.writeText(link).then(function () {
-var asm = btnCopy.innerHTML;
-btnCopy.innerHTML = '<i class="fa-solid fa-check"></i> <span>Disalin!</span>';
-setTimeout(function () { btnCopy.innerHTML = asm; }, 2000);
-});
-};
-}
-if (btnWA) btnWA.href = waUrl;
-}
+// ===== (Dulu: tombol share di cover — sudah dihapus sesuai permintaan) =====
+function pasangShareUI() { return; }
 if (document.readyState === 'loading') {
 document.addEventListener('DOMContentLoaded', pasangShareUI);
 } else {
