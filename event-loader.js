@@ -35,14 +35,30 @@ pasangShuffleGaleri();
 }
 var slug = new URLSearchParams(window.location.search).get('event');
 var _up = new URLSearchParams(window.location.search);
-var _kpd = _up.get('kpd') || _up.get('to') || '';
+// Nama tamu prioritas: ?kpd= lalu ?to= ; "+" di URL otomatis jadi spasi oleh URLSearchParams
+var _kpd = (_up.get('kpd') || _up.get('to') || '').trim();
+
+// ===== NAMA TAMU DI COVER DEPAN: tampil sedini mungkin (tanpa tunggu Supabase) =====
+function pasangNamaTamu() {
+  var g = document.getElementById('guest-name');
+  if (!g) return;
+  if (_kpd) g.textContent = _kpd;
+}
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', pasangNamaTamu);
+} else {
+  pasangNamaTamu();
+}
+
+// Ubah spasi jadi "+" agar URL sesuai format ?kpd=Nama+Tamu
+function encKpd(s) { return encodeURIComponent(s).replace(/%20/g, '+'); }
 
 // ===== TOMBOL SHARE DI DEKAT "Buka Undangan" (jalan meski tidak ada slug) =====
 function pasangShareUI() {
 var s = _up.get('event') || '';
 var kpd = _kpd;
 var base = window.location.origin + '/u/' + s;
-var link = kpd ? base + '?kpd=' + encodeURIComponent(kpd) : base;
+var link = kpd ? base + '?kpd=' + encKpd(kpd) : base;
 var teks = kpd ? 'Assalamualaikum, saya undangan dari ' + kpd : 'Assalamualaikum, saya akan hadir.';
 var waUrl = 'https://wa.me/?text=' + encodeURIComponent(teks + ' ' + link);
 var btnCopy = document.getElementById('btn-copy-link');
@@ -272,7 +288,7 @@ if (f) f.textContent = K.tutup;
 }
 var fl = document.querySelector('footer h3');
 if (fl && panggilan) fl.textContent = panggilan;
-if (L.tamu && !new URLSearchParams(window.location.search).get('to')) {
+if (L.tamu && !_kpd) {
 var g2 = document.getElementById('guest-name');
 if (g2) g2.textContent = L.tamu;
 }

@@ -13,7 +13,7 @@
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet"/>
 <!-- Supabase JS Client (untuk Ucapan & RSVP permanen + data acara dinamis) -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="/event-loader.js?v=2"></script>
+<script src="/event-loader.js?v=3"></script>
 <style>
         :root {
             --color-blue: #2391FF;
@@ -499,9 +499,9 @@
         // Muat ucapan tersimpan saat halaman dibuka
         loadUcapan();
 
-        // 5. Fungsi Baca Nama Tamu dari Link URL (?to=Nama+Tamu)
+        // 5. Fungsi Baca Nama Tamu dari Link URL (?kpd=Nama+Tamu, fallback ?to=)
         const urlParams = new URLSearchParams(window.location.search);
-        const guest = urlParams.get('to');
+        const guest = (urlParams.get('kpd') || urlParams.get('to') || '').trim();
         if (guest) {
             document.getElementById('guest-name').innerText = guest;
         }

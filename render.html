@@ -16,7 +16,7 @@ const sb = window.supabase.createClient('https://nrotipuxmfbiqvzolzox.supabase.c
 (async () => {
 const q = new URLSearchParams(window.location.search);
 // Slug dari ?slug= (mode lama) ATAU dari path /u/slug (mode rewrite baru)
-let slug = q.get('slug');
+let slug = ((q.get('slug') || q.get('event') || '').trim());
 if (!slug) {
 const m = window.location.pathname.match(/\/u\/([^\/?#]+)/);
 if (m) {
@@ -24,9 +24,9 @@ try { slug = decodeURIComponent(m[1]); } catch (e) { slug = m[1]; }
 slug = slug.trim();
 }
 }
-if (!slug) { document.getElementById('msg').textContent = 'Slug undangan tidak ada.'; return; }
+if (!slug) { document.getElementById('msg').textContent = 'Slug undangan tidak ada (cek /u/slug).'; return; }
 const { data, error } = await sb.from('events').select('template').eq('slug', slug).single();
-if (error || !data) { document.getElementById('msg').textContent = 'Undangan tidak ditemukan.'; return; }
+if (error || !data) { document.getElementById('msg').textContent = 'Undangan tidak ditemukan: /u/' + slug; return; }
 const file = data.template === 'palet-2' ? '/Desain/undangan_pernikahan_putra_putri_palet_warna_baru_2/code.html' : '/Desain/undangan_pernikahan_putra_putri_palet_warna_baru_1/code.html';
 // Teruskan SEMUA parameter (?kpd=, ?to=, dll) ke halaman template
 const fwd = new URLSearchParams(window.location.search);
