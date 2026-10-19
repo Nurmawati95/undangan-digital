@@ -196,15 +196,15 @@ function encKpd(s){ return encodeURIComponent(s).replace(/%20/g, '+'); }
 function baseTamuLink(){
 const slug = (val('f-slug') || '').toLowerCase().trim();
 const nama = (document.getElementById('tamu-test') ? document.getElementById('tamu-test').value : '').trim();
-return { slug, link: window.location.origin + '/u/' + slug + (nama ? '?kpd=' + encKpd(nama) : '') };
+return { slug, link: window.location.origin + '/render.html?slug=' + encodeURIComponent(slug) + (nama ? '&kpd=' + encKpd(nama) : '') };
 }
 function updatePrevTamu(){
 const { slug, link } = baseTamuLink();
 if (!slug) return;
-document.getElementById('prev-slug').textContent = 'Link: /u/' + slug;
+document.getElementById('prev-slug').textContent = 'Link: /render.html?slug=' + slug;
 const a = document.getElementById('prev-link');
 const namaPrev = ((document.getElementById('tamu-test') || {}).value || '').trim();
-if (a) a.href = namaPrev ? link.replace(window.location.origin, '') : '/u/' + slug;
+if (a) a.href = namaPrev ? link.replace(window.location.origin, '') : '/render.html?slug=' + encodeURIComponent(slug);
 const p = document.getElementById('prev-tamu-link');
 if (p) p.textContent = link;
 }
@@ -246,8 +246,8 @@ setVal('f-wa-nomor', WA.nomor); setVal('f-wa-teks', WA.teks); setVal('f-wa-pesan
 const L = d.lainnya || {};
 setVal('f-lain-rek1', L.rek1); setVal('f-lain-rek2', L.rek2); setVal('f-lain-musik', L.musik); setVal('f-lain-tamu', L.tamu);
 document.getElementById('prev-img').src = toDirectImg(d.foto_cover) || toDirectImg(d.foto_hero) || '';
-document.getElementById('prev-slug').textContent = 'Link: /u/' + d.slug;
-document.getElementById('prev-link').href = '/u/' + d.slug;
+document.getElementById('prev-slug').textContent = 'Link: /render.html?slug=' + d.slug;
+document.getElementById('prev-link').href = '/render.html?slug=' + encodeURIComponent(d.slug);
 document.getElementById('loading').classList.add('hidden');
 document.getElementById('app').classList.remove('hidden');
 showSect('dasar');
@@ -274,11 +274,11 @@ updated_at: new Date().toISOString()
 const { error } = await sb.from('events').update(payload).eq('id', evId);
 btn.disabled = false;
 if (error) { msg.textContent = 'Gagal menyimpan: ' + error.message; msg.className = 'text-xs mb-3 text-rose-600'; return; }
-msg.textContent = 'Tersimpan! Link undangan: /u/' + payload.slug; msg.className = 'text-xs mb-3 text-emerald-600';
+msg.textContent = 'Tersimpan! Link undangan: /render.html?slug=' + payload.slug; msg.className = 'text-xs mb-3 text-emerald-600';
 document.getElementById('ev-title').textContent = payload.judul;
 document.getElementById('prev-img').src = payload.foto_cover || payload.foto_hero || '';
-document.getElementById('prev-slug').textContent = 'Link: /u/' + payload.slug;
-document.getElementById('prev-link').href = '/u/' + payload.slug;
+document.getElementById('prev-slug').textContent = 'Link: /render.html?slug=' + payload.slug;
+document.getElementById('prev-link').href = '/render.html?slug=' + encodeURIComponent(payload.slug);
 }
 init();
 </script>

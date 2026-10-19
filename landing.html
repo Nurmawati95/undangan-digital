@@ -111,7 +111,7 @@ if (nama && box) {
 var span = box.querySelector('[data-demo-nama]');
 if (span) span.textContent = nama;
 }
-card.setAttribute('href', '/u/' + encodeURIComponent(ev.slug));
+card.setAttribute('href', '/render.html?slug=' + encodeURIComponent(ev.slug));
 });
 });
 })();

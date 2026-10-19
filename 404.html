@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Memuat Undangan - UNDIGITAL</title>
+<script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-[#0b1a30] text-white min-h-screen flex items-center justify-center p-6">
+<div class="text-center">
+<p id="msg" class="text-sm text-slate-300">Memuat undangan...</p>
+<p class="text-[11px] text-slate-500 mt-2">Jika tidak terbuka otomatis, <a id="manual" href="/render.html" class="underline text-[#FFCD54]">klik di sini</a>.</p>
+</div>
+<script>
+// Fallback 404 Vercel: hidupkan lagi link lama /u/slug, /undangan-1, /desain/...
+// Vercel otomatis menampilkan 404.html untuk path yang tidak ada (tanpa perlu rewrites).
+(function () {
+  var path = window.location.pathname || '/';
+  var search = window.location.search || '';
+  var qs = new URLSearchParams(search);
+  var target = null;
+
+  // 1) /u/romeo-juliet?kpd=... -> /render.html?slug=romeo-juliet&kpd=...
+  var m = path.match(/^\/u\/([^\/?#]+)/);
+  if (m) {
+    var slug = '';
+    try { slug = decodeURIComponent(m[1]); } catch (e) { slug = m[1]; }
+    slug = (slug || '').trim();
+    if (slug) {
+      if (!qs.get('slug') && !qs.get('event')) qs.set('slug', slug);
+      target = '/render.html?' + qs.toString();
+    }
+  }
+  // 2) /undangan-1, /undangan-2 -> /code.html (pertahankan query ?event/?kpd)
+  else if (path === '/undangan-1' || path === '/undangan-2') {
+    target = '/code.html' + search;
+  }
+  // 3) Path lama case-sensitive: /Desain/... -> /code.html
+  else if (/^\/desain\//i.test(path)) {
+    target = '/code.html' + search;
+  }
+
+  if (target) {
+    document.getElementById('manual').href = target;
+    window.location.replace(target);
+  } else {
+    document.getElementById('msg').textContent = 'Halaman tidak ditemukan: ' + path;
+  }
+})();
+</script>
+</body>
+</html>

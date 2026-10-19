@@ -162,14 +162,14 @@ var m2 = u.match(/^https:\/\/lh3\.googleusercontent\.com\/d\/([A-Za-z0-9_-]+)(?:
 return m2 ? 'https://lh3.googleusercontent.com/d/' + m2[1] + '=s1600' : u;
 }
 function encKpd(s){ return encodeURIComponent(s).replace(/%20/g, '+'); }
-function linkTamu(slug, nama){ nama = (nama || '').trim(); return window.location.origin + '/u/' + slug + (nama ? '?kpd=' + encKpd(nama) : ''); }
+function linkTamu(slug, nama){ nama = (nama || '').trim(); return window.location.origin + '/render.html?slug=' + encodeURIComponent(slug) + (nama ? '&kpd=' + encKpd(nama) : ''); }
 function updateLinkTamu(id, slug){
 var inp = document.getElementById('tamu-' + id);
 var nama = inp ? inp.value : '';
 var a = document.getElementById('lihat-' + id);
 var prev = document.getElementById('prev-' + id);
 var link = linkTamu(slug, nama);
-if (a) a.href = '/u/' + slug + (nama.trim() ? '?kpd=' + encKpd(nama.trim()) : '');
+if (a) a.href = '/render.html?slug=' + encodeURIComponent(slug) + (nama.trim() ? '&kpd=' + encKpd(nama.trim()) : '');
 if (prev) prev.textContent = link.replace(window.location.origin, '');
 }
 async function salinLinkTamu(id, slug){
@@ -191,13 +191,13 @@ const { data, error } = await sb.from('events').select('id,judul,slug,template,f
 if (error) { box.innerHTML = '<p class="text-xs text-rose-500 text-center py-6">Gagal: ' + esc(error.message) + '</p>'; return; }
 daftarAcara = data || [];
 const filter = document.getElementById('filter-acara');
-filter.innerHTML = '<option value="">Semua acara</option>' + daftarAcara.map((a) => `<option value="${a.id}">${esc(a.judul)} (/u/${esc(a.slug)})</option>`).join('');
+filter.innerHTML = '<option value="">Semua acara</option>' + daftarAcara.map((a) => `<option value="${a.id}">${esc(a.judul)} (${esc(a.slug)})</option>`).join('');
 if (!daftarAcara.length) { box.innerHTML = '<p class="text-xs text-slate-400 text-center py-6">Belum ada acara. Klik <b>Tambah Acara</b> untuk membuat undangan pertama.</p>'; return; }
 box.innerHTML = daftarAcara.map((a) => {
 const img = a.foto_cover ? `<img src="${esc(toDirectImg(a.foto_cover))}" class="w-16 h-16 rounded-xl object-cover bg-slate-200"/>` : `<div class="w-16 h-16 rounded-xl bg-gradient-to-br from-[#2391FF] to-[#0b1a30] flex items-center justify-center text-white font-bold">U</div>`;
 const st = a.status === 'publish' ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-200 text-slate-600';
 const tgl = a.tanggal_utama ? new Date(a.tanggal_utama).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' }) : '-';
-return `<div class="bg-slate-50 border border-slate-100 rounded-2xl p-3 space-y-2.5"><div class="flex gap-3 items-center">${img}<div class="flex-1 min-w-0"><p class="font-bold text-sm truncate">${esc(a.judul)}</p><p class="text-[11px] text-slate-500">/u/${esc(a.slug)} • ${tgl}</p><span class="inline-block mt-1 text-[10px] font-bold px-2 py-0.5 rounded-full ${st}">${esc(a.status)}</span></div><div class="flex flex-col gap-1.5 shrink-0"><a id="lihat-${a.id}" href="/u/${esc(a.slug)}" target="_blank" class="text-[11px] font-semibold text-[#2391FF] hover:underline text-right"><i class="fa-solid fa-eye mr-1"></i>Lihat</a><a href="/edit-acara.html?id=${a.id}" class="text-[11px] font-semibold text-white bg-[#2391FF] hover:bg-[#1875d6] px-3 py-1.5 rounded-lg text-center"><i class="fa-solid fa-pen mr-1"></i>Edit Form</a><button onclick="hapusAcara(${a.id})" class="text-[11px] font-semibold text-rose-500 hover:text-rose-700">Hapus</button></div></div><div class="bg-white rounded-xl border border-slate-200 p-2.5"><label class="text-[10px] font-bold text-slate-500 uppercase tracking-wide">Nama tamu (otomatis jadi ?kpd= di link)</label><div class="flex gap-1.5 mt-1.5"><input id="tamu-${a.id}" oninput="updateLinkTamu(${a.id}, '${esc(a.slug)}')" placeholder="cth: Budi Santoso" class="flex-1 text-xs p-2.5 rounded-lg border border-slate-300 focus:outline-none focus:border-[#2391FF]"/><button id="btn-${a.id}" onclick="salinLinkTamu(${a.id}, '${esc(a.slug)}')" class="text-[11px] font-semibold text-white bg-emerald-500 hover:bg-emerald-600 px-3 rounded-lg shrink-0"><i class="fa-solid fa-copy mr-1"></i>Salin</button></div><p id="prev-${a.id}" class="text-[10px] text-slate-400 mt-1.5 truncate">/u/${esc(a.slug)}</p></div></div>`;
+return `<div class="bg-slate-50 border border-slate-100 rounded-2xl p-3 space-y-2.5"><div class="flex gap-3 items-center">${img}<div class="flex-1 min-w-0"><p class="font-bold text-sm truncate">${esc(a.judul)}</p><p class="text-[11px] text-slate-500">/render.html?slug=${esc(a.slug)} • ${tgl}</p><span class="inline-block mt-1 text-[10px] font-bold px-2 py-0.5 rounded-full ${st}">${esc(a.status)}</span></div><div class="flex flex-col gap-1.5 shrink-0"><a id="lihat-${a.id}" href="/render.html?slug=${esc(a.slug)}" target="_blank" class="text-[11px] font-semibold text-[#2391FF] hover:underline text-right"><i class="fa-solid fa-eye mr-1"></i>Lihat</a><a href="/edit-acara.html?id=${a.id}" class="text-[11px] font-semibold text-white bg-[#2391FF] hover:bg-[#1875d6] px-3 py-1.5 rounded-lg text-center"><i class="fa-solid fa-pen mr-1"></i>Edit Form</a><button onclick="hapusAcara(${a.id})" class="text-[11px] font-semibold text-rose-500 hover:text-rose-700">Hapus</button></div></div><div class="bg-white rounded-xl border border-slate-200 p-2.5"><label class="text-[10px] font-bold text-slate-500 uppercase tracking-wide">Nama tamu (otomatis jadi ?kpd= di link)</label><div class="flex gap-1.5 mt-1.5"><input id="tamu-${a.id}" oninput="updateLinkTamu(${a.id}, '${esc(a.slug)}')" placeholder="cth: Budi Santoso" class="flex-1 text-xs p-2.5 rounded-lg border border-slate-300 focus:outline-none focus:border-[#2391FF]"/><button id="btn-${a.id}" onclick="salinLinkTamu(${a.id}, '${esc(a.slug)}')" class="text-[11px] font-semibold text-white bg-emerald-500 hover:bg-emerald-600 px-3 rounded-lg shrink-0"><i class="fa-solid fa-copy mr-1"></i>Salin</button></div><p id="prev-${a.id}" class="text-[10px] text-slate-400 mt-1.5 truncate">/render.html?slug=${esc(a.slug)}</p></div></div>`;
 }).join('');
 }
 function bukaFormTambah() {

@@ -43,10 +43,10 @@ const server = http.createServer((req, res) => {
   }
   // Alias demo undangan agar URL rapi
   if (urlPath === '/undangan-1') {
-    urlPath = '/desain/code.html';
+    urlPath = '/code.html';
   }
   if (urlPath === '/undangan-2') {
-    urlPath = '/desain/code.html';
+    urlPath = '/code.html';
   }
   // Undangan dinamis per acara: /u/nama-slug (?kpd=Nama+Tamu ikut utuh)
   // Sajikan render.html sebagai "rewrite" (URL asli tidak berubah),
@@ -70,7 +70,12 @@ const server = http.createServer((req, res) => {
 
   fs.stat(filePath, (err, stats) => {
     if (err || !stats.isFile()) {
-      return send(res, 404, 'File tidak ditemukan: ' + urlPath);
+      // Tiru perilaku Vercel: sajikan 404.html (fallback /u/slug) bila ada
+      const notFound = path.join(ROOT, '404.html');
+      return fs.readFile(notFound, (e404, d404) => {
+        if (!e404) return send(res, 404, d404, MIME['.html']);
+        return send(res, 404, 'File tidak ditemukan: ' + urlPath);
+      });
     }
     const ext = path.extname(filePath).toLowerCase();
     fs.readFile(filePath, (err2, data) => {

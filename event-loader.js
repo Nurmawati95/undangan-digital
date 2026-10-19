@@ -57,8 +57,8 @@ function encKpd(s) { return encodeURIComponent(s).replace(/%20/g, '+'); }
 function pasangShareUI() {
 var s = _up.get('event') || '';
 var kpd = _kpd;
-var base = window.location.origin + '/u/' + s;
-var link = kpd ? base + '?kpd=' + encKpd(kpd) : base;
+var base = window.location.origin + '/render.html?slug=' + encodeURIComponent(s);
+var link = kpd ? base + '&kpd=' + encKpd(kpd) : base;
 var teks = kpd ? 'Assalamualaikum, saya undangan dari ' + kpd : 'Assalamualaikum, saya akan hadir.';
 var waUrl = 'https://wa.me/?text=' + encodeURIComponent(teks + ' ' + link);
 var btnCopy = document.getElementById('btn-copy-link');
