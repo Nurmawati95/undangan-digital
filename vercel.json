@@ -1,11 +1,9 @@
 {
-  "version": 2,
   "cleanUrls": true,
   "trailingSlash": false,
   "rewrites": [
     { "source": "/u/:slug", "destination": "/render.html" },
     { "source": "/undangan-1", "destination": "/Desain/undangan_pernikahan_putra_putri_palet_warna_baru_1/code.html" },
-    { "source": "/undangan-2", "destination": "/Desain/undangan_pernikahan_putra_putri_palet_warna_baru_2/code.html" },
-    { "source": "/", "destination": "/landing.html" }
+    { "source": "/undangan-2", "destination": "/Desain/undangan_pernikahan_putra_putri_palet_warna_baru_2/code.html" }
   ]
 }
